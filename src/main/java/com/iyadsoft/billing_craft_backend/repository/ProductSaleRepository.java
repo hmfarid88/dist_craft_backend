@@ -18,6 +18,7 @@ import com.iyadsoft.billing_craft_backend.dto.ProfitItemDto;
 import com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto;
 import com.iyadsoft.billing_craft_backend.dto.SixMonthAnalysis;
 import com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto;
+import com.iyadsoft.billing_craft_backend.dto.TodaySaleSummary;
 import com.iyadsoft.billing_craft_backend.entity.ProductSale;
 
 @Repository
@@ -39,21 +40,21 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "AND s.username = :username AND s.date BETWEEN :startDate AND :endDate")
         List<CustomerProductSaleDTO> getProductsSaleByUsernameDatewise(String username, LocalDate startDate, LocalDate endDate);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  SUM(s.productStock.pprice) as pprice, SUM(s.sprice) as sprice, SUM(s.discount) as discount ) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  s.productStock.pprice as pprice, s.sprice as sprice, SUM(s.discount) as discount ) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.username = :username AND s.saleType = 'customer' " +
                         "AND MONTH(s.date) = MONTH(CURRENT_DATE) AND YEAR(s.date) = YEAR(CURRENT_DATE) GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName ")
         List<ProfitItemDto> getProfitSaleByUsernameForCurrentMonth(String username);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  SUM(s.productStock.pprice) as pprice, SUM(s.sprice) as sprice, SUM(s.discount) as discount ) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  s.productStock.pprice as pprice, s.sprice as sprice, SUM(s.discount) as discount ) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.username = :username AND s.saleType = 'customer' " +
                         "AND YEAR(s.date) = :year AND MONTH(s.date) = :month GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName ")
         List<ProfitItemDto> getSelectedProfitSaleByUsername(String username, int year, int month);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  SUM(s.productStock.pprice) as pprice, SUM(s.sprice) as sprice, SUM(s.discount) as discount ) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProfitItemDto(s.productStock.category, s.productStock.brand, s.productStock.productName, COUNT(s.productStock.productno) as qty,  s.productStock.pprice as pprice, s.sprice as sprice, SUM(s.discount) as discount ) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.username = :username AND s.saleType = 'customer' " +
@@ -82,8 +83,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         +
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType = 'customer' AND (ps.productStock.sprice-ps.discount-ps.offer)>0 AND ps.username=:username AND ps.date=:date group by ps.date, ps.customer.cid")
-        List<CashbookSaleDto> findCustomerSalesDetails(@Param("username") String username,
-                        @Param("date") LocalDate date);
+        List<CashbookSaleDto> findCustomerSalesDetails(@Param("username") String username, @Param("date") LocalDate date);
 
         @Query("SELECT SUM(COALESCE(ps.productStock.pprice, 0.0)) AS totalSoldValue " +
                         "FROM ProductSale ps " +
@@ -174,5 +174,13 @@ Optional<Double> findTotalSaleByCustomerName(@Param("cName") String cName, @Para
     GROUP BY c.cName
 """)
 List<Object[]> getProductSaleByRetailer(@Param("username") String username);
+
+@Query("SELECT p.productStock.productName AS productName, p.productStock.color AS color, COUNT(p.productStock.productName) AS todaySoldQty " +
+       "FROM ProductSale p " +
+       "WHERE p.username = :username AND p.date = :today " +
+       "GROUP BY p.productStock.productName, p.productStock.color")
+List<TodaySaleSummary> countTodaySalesByProductAndColor(
+        @Param("username") String username,
+        @Param("today") LocalDate today);
 
 }

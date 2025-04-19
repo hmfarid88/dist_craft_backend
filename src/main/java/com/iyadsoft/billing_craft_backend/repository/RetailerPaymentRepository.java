@@ -31,7 +31,8 @@ public interface RetailerPaymentRepository extends JpaRepository <RetailerPaymen
 
       @Query("""
     SELECT rp.retailerName,
-           SUM(CASE WHEN rp.paymentType = 'current' THEN rp.amount ELSE 0 END),
+           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date=CURRENT_DATE() THEN rp.amount ELSE 0 END),
+           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date<CURRENT_DATE() THEN rp.amount ELSE 0 END)+
            SUM(CASE WHEN rp.paymentType = 'previous' THEN rp.amount ELSE 0 END)
     FROM RetailerPayment rp
     WHERE rp.username = :username
