@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iyadsoft.billing_craft_backend.dto.LossProfitAnalysis;
+import com.iyadsoft.billing_craft_backend.dto.SaleSummaryDto;
 import com.iyadsoft.billing_craft_backend.dto.SalesItemDTO;
 import com.iyadsoft.billing_craft_backend.dto.SalesRequest;
 import com.iyadsoft.billing_craft_backend.dto.SixMonthAnalysis;
@@ -151,5 +152,14 @@ public class ProductSaleService {
     public List<LossProfitAnalysis> getLastTwelveMonthsProfitLoss(String username) {
         LocalDate startDate = LocalDate.now().minusMonths(12);
         return productSaleRepository.findLastTwelveMonthsProfitLoss(username, startDate);
+    }
+
+    public List<SaleSummaryDto> getProductSaleSummary(String username) {
+        LocalDate date = LocalDate.now();
+        return productSaleRepository.getDatewiseSaleSummary(username, date);
+    }
+
+    public List<SaleSummaryDto> getDatewiseSaleSummary(String username, LocalDate date) {
+       return productSaleRepository.getDatewiseSaleSummary(username, date);
     }
 }

@@ -34,7 +34,7 @@ public class RetailerBalanceService {
     for (Object[] row : retailerInfoRepository.findAllRetailers()) {
         String name = (String) row[0];
         String area = (String) row[1];
-        resultMap.put(name, new RetailerBalanceDto(name, area, 0.0, 0.0, 0.0, 0.0));
+        resultMap.put(name, new RetailerBalanceDto(name, area, 0.0, 0.0, 0.0, 0.0, 0.0));
     }
 
     // Step 2: Add product sales
@@ -42,7 +42,7 @@ public class RetailerBalanceService {
         String name = (String) row[0];
         Double total = (Double) row[1];
         Double today = (Double) row[2];
-        resultMap.computeIfAbsent(name, k -> new RetailerBalanceDto(k, null, 0.0, 0.0, 0.0, 0.0));
+        resultMap.computeIfAbsent(name, k -> new RetailerBalanceDto(k, null, 0.0, 0.0, 0.0, 0.0, 0.0));
         RetailerBalanceDto dto = resultMap.get(name);
         dto.setTotalProductValue(total);
         dto.setTodayProductValue(today);
@@ -53,10 +53,12 @@ public class RetailerBalanceService {
         String name = (String) row[0];
         Double current = (Double) row[1];
         Double previous = (Double) row[2];
-        resultMap.computeIfAbsent(name, k -> new RetailerBalanceDto(k, null, 0.0, 0.0, 0.0, 0.0));
+        Double previousToday = (Double) row[3];
+        resultMap.computeIfAbsent(name, k -> new RetailerBalanceDto(k, null, 0.0, 0.0, 0.0, 0.0, 0.0));
         RetailerBalanceDto dto = resultMap.get(name);
         dto.setCurrentPaymentTotal(current);
         dto.setPreviousPaymentTotal(previous);
+        dto.setTodayPreviousPayment(previousToday);
     }
 
     // Step 4: Return all values with either payment or product sale

@@ -74,7 +74,11 @@ public class ProductStockService {
         return productStockRepository.countProductByUsernameGroupByCategoryBrandProductName(username, today);
     }
 
-   
+    public List<ProductStockCountDTO> getDatewiseProductCountByUserAndGroup(String username, LocalDate today) {
+       return productStockRepository.countProductByUsernameGroupByCategoryBrandProductName(username, today);
+    }
+
+       
     public List<Pricedrop> getPricedropsByUsername(String username) {
         return pricedropRepository.findByUsername(username);
     }

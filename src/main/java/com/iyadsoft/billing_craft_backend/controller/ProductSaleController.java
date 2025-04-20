@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.iyadsoft.billing_craft_backend.dto.LossProfitAnalysis;
+import com.iyadsoft.billing_craft_backend.dto.SaleSummaryDto;
 import com.iyadsoft.billing_craft_backend.dto.SalesRequest;
 import com.iyadsoft.billing_craft_backend.entity.ProductSale;
 import com.iyadsoft.billing_craft_backend.entity.ProductStock;
@@ -116,5 +117,17 @@ public class ProductSaleController {
     public ResponseEntity<List<LossProfitAnalysis>> getLastTwelveMonthsProfitLoss(@RequestParam String username) {
         List<LossProfitAnalysis> profitLossData = productSaleService.getLastTwelveMonthsProfitLoss(username);
         return ResponseEntity.ok(profitLossData);
+    }
+
+    @GetMapping("/productSaleSummary")
+    public ResponseEntity<List<SaleSummaryDto>> getProductSaleSummary(@RequestParam String username) {
+        List<SaleSummaryDto> productCounts = productSaleService.getProductSaleSummary(username);
+        return ResponseEntity.ok(productCounts);
+    }
+
+    @GetMapping("/datewiseSaleSummary")
+    public ResponseEntity<List<SaleSummaryDto>> getDatewiseSaleSummary(@RequestParam String username, LocalDate date) {
+        List<SaleSummaryDto> productCounts = productSaleService.getDatewiseSaleSummary(username, date);
+        return ResponseEntity.ok(productCounts);
     }
 }

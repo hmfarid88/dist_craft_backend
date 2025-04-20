@@ -12,6 +12,7 @@ public class RetailerBalanceDto {
     private String area;
     private Double totalProductValue;
     private Double todayProductValue;
+    private Double todayPreviousPayment;
     private Double currentPaymentTotal;
     private Double previousPaymentTotal;
 }

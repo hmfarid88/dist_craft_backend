@@ -283,6 +283,12 @@ public class ProductController {
         return ResponseEntity.ok(productCounts);
     }
 
+    @GetMapping("/datewiseStockSummary")
+    public ResponseEntity<List<ProductStockCountDTO>> getDatewiseStockSummary(@RequestParam String username, LocalDate today) {
+        List<ProductStockCountDTO> productCounts = productStockService.getDatewiseProductCountByUserAndGroup(username, today);
+        return ResponseEntity.ok(productCounts);
+    }
+    
     @PutMapping("/vatEntry")
     public Vat saveOrUpdateVat(@RequestBody Vat vat) {
         return vatService.saveOrUpdateVat(vat);
