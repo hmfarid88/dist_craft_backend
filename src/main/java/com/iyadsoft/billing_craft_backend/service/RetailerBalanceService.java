@@ -1,5 +1,6 @@
 package com.iyadsoft.billing_craft_backend.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class RetailerBalanceService {
         this.retailerPaymentRepository=retailerPaymentRepository;
     }
 
-   public List<RetailerBalanceDto> getRetailerBalance(String username) {
+   public List<RetailerBalanceDto> getRetailerBalance(String username, LocalDate date) {
     Map<String, RetailerBalanceDto> resultMap = new HashMap<>();
 
     // Step 1: Load all retailers
@@ -38,7 +39,7 @@ public class RetailerBalanceService {
     }
 
     // Step 2: Add product sales
-    for (Object[] row : productSaleRepository.getProductSaleByRetailer(username)) {
+    for (Object[] row : productSaleRepository.getProductSaleByRetailer(username, date)) {
         String name = (String) row[0];
         Double total = (Double) row[1];
         Double today = (Double) row[2];
@@ -49,7 +50,7 @@ public class RetailerBalanceService {
     }
 
     // Step 3: Add payment data
-    for (Object[] row : retailerPaymentRepository.getPaymentsByRetailer(username)) {
+    for (Object[] row : retailerPaymentRepository.getPaymentsByRetailer(username, date)) {
         String name = (String) row[0];
         Double current = (Double) row[1];
         Double previous = (Double) row[2];

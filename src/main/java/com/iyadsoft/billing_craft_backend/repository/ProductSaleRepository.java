@@ -90,13 +90,13 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :cName")
         Double findTotalSoldValueByUsernameAndSupplier(@Param("username") String username, @Param("cName") String supplier);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, 'No') "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, 'No') "
                         +
                         "FROM ProductSale ps " +
-                        "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName "
+                        "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date <= :date "
                         +
                         "GROUP BY ps.date, ps.customer.cid")
-        List<SupplierDetailsDto> findProductSalesByUsernameAndSupplierName(String username, String supplierName);
+        List<SupplierDetailsDto> findProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate date);
 
         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(ps.date, ps.customer.cid, SUM(ps.sprice-ps.discount), sum(ps.customer.vatAmount), 0.0) "
                         +
@@ -170,10 +170,10 @@ Optional<Double> findTotalSaleByCustomerName(@Param("cName") String cName, @Para
                     ELSE 0 END)
     FROM ProductSale p
     JOIN p.customer c
-    WHERE p.username = :username
+    WHERE p.username = :username AND p.date <= :date 
     GROUP BY c.cName
 """)
-List<Object[]> getProductSaleByRetailer(@Param("username") String username);
+List<Object[]> getProductSaleByRetailer(@Param("username") String username, @Param("date") LocalDate date);
 
 @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SaleSummaryDto(s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.color, COUNT(s.productStock.productno) as qty, SUM(s.sprice) as sprice) "
 +

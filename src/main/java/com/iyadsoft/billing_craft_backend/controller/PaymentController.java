@@ -183,9 +183,14 @@ public class PaymentController {
     }
 
     @GetMapping("/getSupplierBalance-details")
-    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username,
-            @RequestParam String supplierName) {
-        return supplierBalanceService.getSupplierDetails(username, supplierName);
+    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username, @RequestParam String supplierName) {
+        LocalDate date=LocalDate.now();
+        return supplierBalanceService.getSupplierDetails(username, supplierName, date);
+    }
+
+    @GetMapping("/getDatewiseSupplier-details")
+    public List<SupplierDetailsDto> getDatewiseSupplierDetailsByUsername(@RequestParam String username, @RequestParam String supplierName, @RequestParam LocalDate date) {
+        return supplierBalanceService.getSupplierDetails(username, supplierName, date);
     }
 
     @GetMapping("/getMonthlyExpense")
@@ -222,7 +227,13 @@ public class PaymentController {
 
     @GetMapping("/getRetailerBalance")
     public List<RetailerBalanceDto> getRetailerBalance(@RequestParam String username) {
-        return retailerBalanceService.getRetailerBalance(username);
+        LocalDate date=LocalDate.now();
+        return retailerBalanceService.getRetailerBalance(username, date);
+    }
+
+    @GetMapping("/getDatewiseRetailerBalance")
+    public List<RetailerBalanceDto> getDatewiseRetailerBalance(@RequestParam String username, @RequestParam LocalDate date) {
+        return retailerBalanceService.getRetailerBalance(username, date);
     }
 
     @GetMapping("/getDeatailsRetailerBalance")

@@ -1,5 +1,6 @@
 package com.iyadsoft.billing_craft_backend.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,9 +21,9 @@ public class SupplierBalanceService {
     private final SupplierPaymentRepository supplierPaymentRepository;
 
     @Autowired
-    public SupplierBalanceService(ProductStockRepository productStockRepository, 
-                                  ProductSaleRepository productSaleRepository, 
-                                  SupplierPaymentRepository supplierPaymentRepository) {
+    public SupplierBalanceService(ProductStockRepository productStockRepository,
+            ProductSaleRepository productSaleRepository,
+            SupplierPaymentRepository supplierPaymentRepository) {
         this.productStockRepository = productStockRepository;
         this.productSaleRepository = productSaleRepository;
         this.supplierPaymentRepository = supplierPaymentRepository;
@@ -31,7 +32,6 @@ public class SupplierBalanceService {
     public List<SupplierSummaryDTO> getSupplierData(String username) {
         // Fetch all distinct supplier names
         List<String> supplierNames = productStockRepository.findAllDistinctSupplierNames(username);
-
         List<SupplierSummaryDTO> summaries = new ArrayList<>();
 
         // Iterate over each supplier and aggregate the data
@@ -58,12 +58,12 @@ public class SupplierBalanceService {
         return summaries;
     }
 
-    public List<SupplierDetailsDto> getSupplierDetails(String username, String supplierName) {
+    public List<SupplierDetailsDto> getSupplierDetails(String username, String supplierName, LocalDate date) {
         // Fetch data from each repository method
-        List<SupplierDetailsDto> productPurchases = productStockRepository.findProductDetailsByUsernameAndSupplierName(username, supplierName);
-        List<SupplierDetailsDto> productSales = productSaleRepository.findProductSalesByUsernameAndSupplierName(username, supplierName);
-        List<SupplierDetailsDto> payments = supplierPaymentRepository.findDetailsPaymentByUsernameAndSupplier(username, supplierName);
-        List<SupplierDetailsDto> receipts = supplierPaymentRepository.findDetailsReceiveByUsernameAndSupplier(username, supplierName);
+        List<SupplierDetailsDto> productPurchases = productStockRepository.findProductDetailsByUsernameAndSupplierName(username, supplierName, date);
+        List<SupplierDetailsDto> productSales = productSaleRepository.findProductSalesByUsernameAndSupplierName(username, supplierName, date);
+        List<SupplierDetailsDto> payments = supplierPaymentRepository.findDetailsPaymentByUsernameAndSupplier(username, supplierName, date);
+        List<SupplierDetailsDto> receipts = supplierPaymentRepository.findDetailsReceiveByUsernameAndSupplier(username, supplierName, date);
 
         // Combine the results
         List<SupplierDetailsDto> combinedDetails = new ArrayList<>();
@@ -72,7 +72,8 @@ public class SupplierBalanceService {
         combinedDetails.addAll(payments);
         combinedDetails.addAll(receipts);
 
-        // Sort the combined list by date (assuming date is a field in SupplierDetailsDto)
+        // Sort the combined list by date (assuming date is a field in
+        // SupplierDetailsDto)
         combinedDetails.sort(Comparator.comparing(SupplierDetailsDto::getDate));
 
         return combinedDetails;

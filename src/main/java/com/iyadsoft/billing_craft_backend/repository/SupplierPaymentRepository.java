@@ -39,18 +39,18 @@ public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment
       @Param("username") String username,
       @Param("supplierName") String supplierName);
 
-      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(sp.date, 'Payment', 0.0, 0.0, sp.amount, 0.0, sp.note) " +
+      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(sp.date, 'Payment', 0L, 0.0, 0.0, sp.amount, 0.0, sp.note) " +
       "FROM SupplierPayment sp " +
-      "WHERE sp.paymentType = 'payment' AND sp.username = :username AND sp.supplierName = :supplierName")
+      "WHERE sp.paymentType = 'payment' AND sp.username = :username AND sp.supplierName = :supplierName AND sp.date <= :date")
       List<SupplierDetailsDto> findDetailsPaymentByUsernameAndSupplier(
       @Param("username") String username,
-      @Param("supplierName") String supplierName);
+      @Param("supplierName") String supplierName, @Param("date") LocalDate date);
 
-      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(sp.date, 'Receive', 0.0, 0.0, 0.0, sp.amount, sp.note) " +
+      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(sp.date, 'Receive', 0L, 0.0, 0.0, 0.0, sp.amount, sp.note) " +
       "FROM SupplierPayment sp " +
-      "WHERE sp.paymentType = 'receive' AND sp.username = :username AND sp.supplierName = :supplierName")
+      "WHERE sp.paymentType = 'receive' AND sp.username = :username AND sp.supplierName = :supplierName AND sp.date <= :date")
   List<SupplierDetailsDto> findDetailsReceiveByUsernameAndSupplier(
       @Param("username") String username,
-      @Param("supplierName") String supplierName);
+      @Param("supplierName") String supplierName, @Param("date") LocalDate date);
 
 }

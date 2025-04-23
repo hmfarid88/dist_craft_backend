@@ -31,15 +31,15 @@ public interface RetailerPaymentRepository extends JpaRepository <RetailerPaymen
 
       @Query("""
     SELECT rp.retailerName,
-           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date = CURRENT_DATE() THEN rp.amount ELSE 0 END),
-           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date < CURRENT_DATE() THEN rp.amount ELSE 0 END)+
-           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date < CURRENT_DATE() THEN rp.amount ELSE 0 END),
-           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date = CURRENT_DATE() THEN rp.amount ELSE 0 END)
+           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date = :date THEN rp.amount ELSE 0 END),
+           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date < :date THEN rp.amount ELSE 0 END)+
+           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date < :date THEN rp.amount ELSE 0 END),
+           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date = :date THEN rp.amount ELSE 0 END)
            FROM RetailerPayment rp
     WHERE rp.username = :username
     GROUP BY rp.retailerName
 """)
-List<Object[]> getPaymentsByRetailer(@Param("username") String username);
+List<Object[]> getPaymentsByRetailer(@Param("username") String username, @Param("date") LocalDate date);
 
      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(sp.date, sp.paymentType, 0.0, 0.0, sp.amount) " +
       "FROM RetailerPayment sp " +
