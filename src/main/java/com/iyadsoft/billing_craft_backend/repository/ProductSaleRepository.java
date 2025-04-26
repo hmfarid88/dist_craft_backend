@@ -175,6 +175,13 @@ Optional<Double> findTotalSaleByCustomerName(@Param("cName") String cName, @Para
 """)
 List<Object[]> getProductSaleByRetailer(@Param("username") String username, @Param("date") LocalDate date);
 
+@Query("SELECT SUM((p.sprice - COALESCE(p.discount, 0) - COALESCE(p.offer, 0)) + COALESCE(c.vatAmount, 0)) " +
+       "FROM ProductSale p " +
+       "JOIN p.customer c " +
+       "WHERE p.username = :username")
+Optional<Double> getTotalProductValue(@Param("username") String username);
+
+
 @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SaleSummaryDto(s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.color, COUNT(s.productStock.productno) as qty, SUM(s.sprice) as sprice) "
 +
 "FROM ProductSale s " +

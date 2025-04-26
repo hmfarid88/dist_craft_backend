@@ -31,15 +31,21 @@ public interface RetailerPaymentRepository extends JpaRepository <RetailerPaymen
 
       @Query("""
     SELECT rp.retailerName,
-           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date = :date THEN rp.amount ELSE 0 END),
-           SUM(CASE WHEN rp.paymentType = 'current' AND rp.date < :date THEN rp.amount ELSE 0 END)+
-           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date < :date THEN rp.amount ELSE 0 END),
-           SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date = :date THEN rp.amount ELSE 0 END)
-           FROM RetailerPayment rp
-    WHERE rp.username = :username
-    GROUP BY rp.retailerName
+           COALESCE(SUM(CASE WHEN rp.paymentType = 'current' AND rp.date = :date THEN rp.amount ELSE 0 END), 0),
+           COALESCE(SUM(CASE WHEN rp.paymentType = 'current' AND rp.date < :date THEN rp.amount ELSE 0 END), 0)+
+           COALESCE(SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date < :date THEN rp.amount ELSE 0 END), 0),
+           COALESCE(SUM(CASE WHEN rp.paymentType = 'previous' AND rp.date = :date THEN rp.amount ELSE 0 END), 0) 
+           FROM RetailerPayment rp 
+    WHERE rp.username = :username GROUP BY rp.retailerName
 """)
 List<Object[]> getPaymentsByRetailer(@Param("username") String username, @Param("date") LocalDate date);
+
+@Query("SELECT COALESCE(SUM(CASE WHEN rp.paymentType = 'current' THEN rp.amount ELSE 0 END), 0) + " +
+"COALESCE(SUM(CASE WHEN rp.paymentType = 'previous' THEN rp.amount ELSE 0 END), 0) " +
+"FROM RetailerPayment rp " +
+"WHERE rp.username = :username")
+Optional<Double> getTotalPayment(@Param("username") String username);
+
 
      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(sp.date, sp.paymentType, 0.0, 0.0, sp.amount) " +
       "FROM RetailerPayment sp " +

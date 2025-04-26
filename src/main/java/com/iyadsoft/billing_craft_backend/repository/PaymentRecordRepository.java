@@ -37,6 +37,28 @@ public interface PaymentRecordRepository extends JpaRepository<PaymentRecord, Lo
                         "AS total_amount", nativeQuery = true)
         Double findNetSumAmountBeforeToday(@Param("username") String username, @Param("date") LocalDate date);
 
+        @Query(value = "SELECT ( " +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM payment_record WHERE payment_type='receive' AND username = :username) + "
+        +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM supplier_payment WHERE payment_type='receive' AND username = :username) + "
+        +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM retailer_payment WHERE username = :username) + "
+        +
+        
+        "(SELECT COALESCE(SUM(amount), 0) FROM profit_withdraw WHERE type='deposit' AND username = :username) "
+        +
+        ") - ( " +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM expense WHERE username = :username) + "
+        +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM payment_record WHERE payment_type='payment' AND username = :username) + "
+        +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM supplier_payment WHERE payment_type='payment' AND username = :username) + "
+        +
+        "  (SELECT COALESCE(SUM(amount), 0) FROM profit_withdraw WHERE type='withdraw' AND username = :username)) "
+        +
+        "AS total_amount", nativeQuery = true)
+Double findCashToday(@Param("username") String username);
+
         @Query("SELECT SUM(p.amount) FROM PaymentRecord p WHERE p.paymentType='payment' AND p.username=:username ")
         Double findAllPaymentSum(@Param("username") String username);
 

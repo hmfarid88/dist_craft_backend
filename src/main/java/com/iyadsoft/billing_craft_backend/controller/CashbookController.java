@@ -34,6 +34,11 @@ public class CashbookController {
     public Double getNetSumAmountBeforeToday(@RequestParam String username, LocalDate date) {
         return paymentRecordRepository.findNetSumAmountBeforeToday(username, date);
     }
+    
+    @GetMapping("/net-cash-today")
+    public Double getNetCashToday(@RequestParam String username) {
+        return paymentRecordRepository.findCashToday(username);
+    } 
 
     @GetMapping("/allPaymentSum")
     public Double getAllPayment(@RequestParam String username) {

@@ -1,11 +1,13 @@
 package com.iyadsoft.billing_craft_backend.service;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,14 +100,17 @@ public class ProductSaleService {
             // Save each ProductSale item
             savedSalesItems.add(productSaleRepository.save(productSale));
         }
-        String phoneNumber=retailerInfoRepository.findByRetailerNameAndUsername(customer.getCName(), customer.getUsername());
         double vat=customer.getVatAmount();
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("en", "IN"));
+        String formattedTotalValue = numberFormat.format(totalValue+vat);
+        String phoneNumber=retailerInfoRepository.findByRetailerNameAndUsername(customer.getCName(), customer.getUsername());
         double totalDue = balance + totalValue + vat;
+        String formattedTotalDue = numberFormat.format(totalDue);
         String smsResponse = smsService.sendSms(
                 savedCustomer.getUsername(),
                 phoneNumber,
-                "Dear " + savedCustomer.getCName() + ", your total bill is ৳" + totalValue + vat + ". And total due is ৳"
-                        + totalDue + " Thanks from " + savedCustomer.getUsername() + " !");
+                "Dear " + savedCustomer.getCName() + ", your total bill is ৳" + formattedTotalValue + ". And total due is ৳"
+                        + formattedTotalDue + " Thanks from " + savedCustomer.getUsername() + ".");
 
         System.out.println("SMS API Response: " + smsResponse);
 

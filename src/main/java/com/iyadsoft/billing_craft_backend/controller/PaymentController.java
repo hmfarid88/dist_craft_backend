@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -245,5 +246,11 @@ public class PaymentController {
     public List<RetailerPayment> getDatewiseRetailerPayForCurrentMonth(@RequestParam String username,
             LocalDate startDate, LocalDate endDate) {
         return retailerPaymentService.getDatewiseRetailerPay(username, startDate, endDate);
+    }
+
+     @GetMapping("/getRetailerDue")
+    public ResponseEntity<Double> getBalance(@RequestParam String username) {
+        Double balance = retailerBalanceService.getBalance(username);
+        return ResponseEntity.ok(balance);
     }
 }
