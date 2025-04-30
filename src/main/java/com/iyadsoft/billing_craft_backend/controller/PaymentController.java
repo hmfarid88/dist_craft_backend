@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -298,6 +299,24 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "Something went wrong."));
+        }
+    }
+
+    @GetMapping("/getRetailerInfoByRetailer")
+    public Optional<RetailerInfo> getRetailerInfo(@RequestParam String username, @RequestParam String retailerName) {
+        return retailerInfoRepository.findByUsernameAndRetailerName(username, retailerName);
+    }
+
+    @PutMapping("/updateRetailerInfo/{id}")
+    public ResponseEntity<?> updateRetailerInfo(@PathVariable Long id, @RequestBody RetailerInfo retailerInfo) {
+        try {
+            RetailerInfo updatedRetailer = retailerBalanceService.updateRetailerInfo(id, retailerInfo);
+            return ResponseEntity.ok(updatedRetailer);
+        } catch (RuntimeException e) {
+            // Return a response with the error message
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(400).body(errorResponse);
         }
     }
 }

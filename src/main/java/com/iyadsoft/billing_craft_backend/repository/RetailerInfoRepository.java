@@ -22,5 +22,9 @@ public interface RetailerInfoRepository extends JpaRepository<RetailerInfo, Inte
 
      @Query("SELECT r.retailerName, r.area FROM RetailerInfo r ORDER BY r.area ASC")
      List<Object[]> findAllRetailers();
-     
+
+     Optional<RetailerInfo> findById(Long id);
+
+     boolean existsByRetailerNameAndIdNot(String retailerName, Long id);
+
 }

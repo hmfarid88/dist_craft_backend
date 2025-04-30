@@ -6,11 +6,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.iyadsoft.billing_craft_backend.dto.RetailerBalanceDto;
 import com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto;
+import com.iyadsoft.billing_craft_backend.entity.RetailerInfo;
 import com.iyadsoft.billing_craft_backend.repository.ProductSaleRepository;
 import com.iyadsoft.billing_craft_backend.repository.RetailerInfoRepository;
 import com.iyadsoft.billing_craft_backend.repository.RetailerPaymentRepository;
@@ -95,5 +97,33 @@ public class RetailerBalanceService {
         Double totalPayment = retailerPaymentRepository.getTotalPayment(username).orElse(0.0);
 
         return totalProductValue - totalPayment;
+    }
+
+     public RetailerInfo updateRetailerInfo(Long id, RetailerInfo updatedRetailerInfo) {
+        Optional<RetailerInfo> existingRetailerOpt = retailerInfoRepository.findById(id);
+    
+        if (existingRetailerOpt.isPresent()) {
+            RetailerInfo existingRetailer = existingRetailerOpt.get();
+    
+            // Check if the updated retailer name already exists (excluding the current retailer)
+            boolean retailerNameExists = retailerInfoRepository.existsByRetailerNameAndIdNot(
+                    updatedRetailerInfo.getRetailerName(), id);
+    
+            if (retailerNameExists) {
+           
+                throw new RuntimeException("Retailer name '" + updatedRetailerInfo.getRetailerName() 
+                    + "' already exists. Try another.");
+            }
+    
+            // Update retailer info
+            existingRetailer.setRetailerName(updatedRetailerInfo.getRetailerName());
+            existingRetailer.setArea(updatedRetailerInfo.getArea());
+            existingRetailer.setPhoneNumber(updatedRetailerInfo.getPhoneNumber());
+            existingRetailer.setAddress(updatedRetailerInfo.getAddress());
+    
+            return retailerInfoRepository.save(existingRetailer);
+        } else {
+            throw new RuntimeException("Retailer not found with ID: " + id);
+        }
     }
 }
