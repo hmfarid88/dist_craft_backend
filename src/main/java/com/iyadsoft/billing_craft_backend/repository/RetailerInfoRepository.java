@@ -20,7 +20,7 @@ public interface RetailerInfoRepository extends JpaRepository<RetailerInfo, Inte
      @Query("SELECT r.phoneNumber FROM RetailerInfo r WHERE r.retailerName = :retailerName AND r.username = :username")
      String findByRetailerNameAndUsername(@Param("retailerName") String retailerName, @Param("username") String username);
 
-     @Query("SELECT r.retailerName, r.area FROM RetailerInfo r")
+     @Query("SELECT r.retailerName, r.area FROM RetailerInfo r ORDER BY r.area ASC")
      List<Object[]> findAllRetailers();
      
 }

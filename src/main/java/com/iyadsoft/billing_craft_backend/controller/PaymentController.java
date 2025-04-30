@@ -1,14 +1,19 @@
 package com.iyadsoft.billing_craft_backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +24,7 @@ import com.iyadsoft.billing_craft_backend.dto.PayRecevDetails;
 import com.iyadsoft.billing_craft_backend.dto.RetailerBalanceDto;
 import com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto;
 import com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto;
+import com.iyadsoft.billing_craft_backend.dto.SupplierProductDto;
 import com.iyadsoft.billing_craft_backend.dto.SupplierSummaryDTO;
 import com.iyadsoft.billing_craft_backend.entity.Expense;
 import com.iyadsoft.billing_craft_backend.entity.PaymentName;
@@ -32,6 +38,7 @@ import com.iyadsoft.billing_craft_backend.repository.ExpenseRepository;
 import com.iyadsoft.billing_craft_backend.repository.PaymentNameRepository;
 import com.iyadsoft.billing_craft_backend.repository.PaymentRecordRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProductSaleRepository;
+import com.iyadsoft.billing_craft_backend.repository.ProductStockRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProfitWithdrawRepository;
 import com.iyadsoft.billing_craft_backend.repository.RetailerInfoRepository;
 import com.iyadsoft.billing_craft_backend.repository.RetailerPaymentRepository;
@@ -41,6 +48,8 @@ import com.iyadsoft.billing_craft_backend.service.RetailerBalanceService;
 import com.iyadsoft.billing_craft_backend.service.RetailerPaymentService;
 import com.iyadsoft.billing_craft_backend.service.SmsService;
 import com.iyadsoft.billing_craft_backend.service.SupplierBalanceService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/payment")
@@ -87,6 +96,9 @@ public class PaymentController {
     @Autowired
     private RetailerBalanceService retailerBalanceService;
 
+    @Autowired
+    private ProductStockRepository productStockRepository;
+
     @PostMapping("/addPaymentName")
     public ResponseEntity<?> addPaymentName(@RequestBody PaymentName paymentName) {
         if (paymentNameRepository.existsByUsernameAndPaymentPerson(paymentName.getUsername(),
@@ -111,31 +123,30 @@ public class PaymentController {
     public RetailerPayment newItem(@RequestBody RetailerPayment retailerPayment) {
         // First, save the payment
         RetailerPayment savedPayment = retailerPaymentRepository.save(retailerPayment);
-    
+
         // 🔢 Calculate total sale
         Double previousSalesTotal = productSaleRepository
                 .findTotalSaleByCustomerName(retailerPayment.getRetailerName(), retailerPayment.getUsername())
                 .orElse(0.0);
-    
+
         // 💰 Get total payments
         Double totalPayment = retailerPaymentRepository
                 .findTotalPaidByCustomerName(retailerPayment.getRetailerName(), retailerPayment.getUsername())
                 .orElse(0.0);
-    
+
         // 🧾 Get total VAT
         Double totalVat = customerRepository
                 .findTotalVatByCustomerName(retailerPayment.getRetailerName(), retailerPayment.getUsername())
                 .orElse(0.0);
-    
+
         // 📊 Calculate balance
         double balance = (previousSalesTotal + totalVat) - totalPayment;
-    
+
         // 📱 Get phone number
         String phoneNumber = retailerInfoRepository.findByRetailerNameAndUsername(
                 retailerPayment.getRetailerName(),
-                retailerPayment.getUsername()
-        );
-    
+                retailerPayment.getUsername());
+
         // 📤 Send SMS
         String smsResponse = smsService.sendSms(
                 retailerPayment.getUsername(),
@@ -143,14 +154,12 @@ public class PaymentController {
                 "Dear " + retailerPayment.getRetailerName() +
                         ", your payment is ৳" + retailerPayment.getAmount() +
                         ". And total due is ৳" + balance +
-                        ". Thanks from " + retailerPayment.getUsername() + "!"
-        );
-    
+                        ". Thanks from " + retailerPayment.getUsername() + "!");
+
         System.out.println("SMS API Response: " + smsResponse);
-    
+
         return savedPayment;
     }
-    
 
     @PostMapping("/supplierPayment")
     public SupplierPayment newItem(@RequestBody SupplierPayment supplierPayment) {
@@ -184,13 +193,15 @@ public class PaymentController {
     }
 
     @GetMapping("/getSupplierBalance-details")
-    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username, @RequestParam String supplierName) {
-        LocalDate date=LocalDate.now();
+    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username,
+            @RequestParam String supplierName) {
+        LocalDate date = LocalDate.now();
         return supplierBalanceService.getSupplierDetails(username, supplierName, date);
     }
 
     @GetMapping("/getDatewiseSupplier-details")
-    public List<SupplierDetailsDto> getDatewiseSupplierDetailsByUsername(@RequestParam String username, @RequestParam String supplierName, @RequestParam LocalDate date) {
+    public List<SupplierDetailsDto> getDatewiseSupplierDetailsByUsername(@RequestParam String username,
+            @RequestParam String supplierName, @RequestParam LocalDate date) {
         return supplierBalanceService.getSupplierDetails(username, supplierName, date);
     }
 
@@ -228,17 +239,19 @@ public class PaymentController {
 
     @GetMapping("/getRetailerBalance")
     public List<RetailerBalanceDto> getRetailerBalance(@RequestParam String username) {
-        LocalDate date=LocalDate.now();
+        LocalDate date = LocalDate.now();
         return retailerBalanceService.getRetailerBalance(username, date);
     }
 
     @GetMapping("/getDatewiseRetailerBalance")
-    public List<RetailerBalanceDto> getDatewiseRetailerBalance(@RequestParam String username, @RequestParam LocalDate date) {
+    public List<RetailerBalanceDto> getDatewiseRetailerBalance(@RequestParam String username,
+            @RequestParam LocalDate date) {
         return retailerBalanceService.getRetailerBalance(username, date);
     }
 
     @GetMapping("/getDeatailsRetailerBalance")
-    public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username, @RequestParam String retailerName) {
+    public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username,
+            @RequestParam String retailerName) {
         return retailerBalanceService.getRetailerDetails(username, retailerName);
     }
 
@@ -248,9 +261,43 @@ public class PaymentController {
         return retailerPaymentService.getDatewiseRetailerPay(username, startDate, endDate);
     }
 
-     @GetMapping("/getRetailerDue")
+    @GetMapping("/getRetailerDue")
     public ResponseEntity<Double> getBalance(@RequestParam String username) {
         Double balance = retailerBalanceService.getBalance(username);
         return ResponseEntity.ok(balance);
+    }
+
+    @GetMapping("/getProductInfo")
+    public List<SupplierProductDto> getProductByInvoice(@RequestParam String username, @RequestParam String supplierInvoice) {
+        return productStockRepository.findProductInfoByInvoiceAndUser(username, supplierInvoice);
+    }
+
+    @GetMapping("/getRetailerPaymentToEdit")
+    public RetailerPayment getRetailerPayment(Long id) {
+        return retailerPaymentService.getRetailerPaymentById(id);
+    }
+
+    @PutMapping("/updateRetailerPayInfo/{id}")
+    public ResponseEntity<?> updateProductInfo(@PathVariable Long id, @RequestBody RetailerPayment retailerPayment) {
+        try {
+            RetailerPayment updatedpPayment = retailerPaymentService.updateRetailerPayInfo(id, retailerPayment);
+            return ResponseEntity.ok(updatedpPayment);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(400).body(errorResponse);
+        }
+    }
+
+    @DeleteMapping("/deleteRetailerPayInfo/{id}")
+    public ResponseEntity<?> deleteRetailerPayInfo(@PathVariable Long id) {
+        try {
+            retailerPaymentService.deleteRetailerPaymentById(id);
+            return ResponseEntity.ok().body(Collections.singletonMap("message", "Retailer payment deleted successfully."));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "Something went wrong."));
+        }
     }
 }

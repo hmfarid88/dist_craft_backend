@@ -14,6 +14,7 @@ import com.iyadsoft.billing_craft_backend.dto.ProductEntryDto;
 import com.iyadsoft.billing_craft_backend.dto.ProductStockCountDTO;
 import com.iyadsoft.billing_craft_backend.dto.SaleReturnDto;
 import com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto;
+import com.iyadsoft.billing_craft_backend.dto.SupplierProductDto;
 import com.iyadsoft.billing_craft_backend.dto.UpdateableStock;
 import com.iyadsoft.billing_craft_backend.entity.ProductStock;
 
@@ -103,8 +104,13 @@ List<ProductStockCountDTO> countProductByUsernameGroupByCategoryBrandProductName
 
     boolean existsByProductnoAndProIdNot(String productno, Long proId);
 
-    Optional<ProductStock> findTopByUsernameAndBrandAndProductNameOrderByProIdDesc(String username, String brand,
-            String productName);
+    Optional<ProductStock> findTopByUsernameAndBrandAndProductNameOrderByProIdDesc(String username, String brand, String productName);
 
+            @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierProductDto(" +
+            "ps.productName, ps.color, ps.pprice, COUNT(ps.productno)) " +
+            "FROM ProductStock ps " +
+            "WHERE ps.username = :username AND ps.supplierInvoice = :supplierInvoice " +
+            "GROUP BY ps.productName, ps.color, ps.pprice")
+     List<SupplierProductDto> findProductInfoByInvoiceAndUser(@Param("username") String username, @Param("supplierInvoice") String supplierInvoice);
      
 }
