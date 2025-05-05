@@ -34,7 +34,7 @@ public class RetailerBalanceService {
         Map<String, RetailerBalanceDto> resultMap = new HashMap<>();
 
         // Step 1: Load all retailers
-        for (Object[] row : retailerInfoRepository.findAllRetailers()) {
+        for (Object[] row : retailerInfoRepository.findAllRetailers(username)) {
             String name = (String) row[0];
             String area = (String) row[1];
             resultMap.put(name, new RetailerBalanceDto(name, area, 0.0, 0.0, 0.0, 0.0, 0.0));
@@ -99,24 +99,54 @@ public class RetailerBalanceService {
         return totalProductValue - totalPayment;
     }
 
-     public RetailerInfo updateRetailerInfo(Long id, RetailerInfo updatedRetailerInfo) {
+    //  public RetailerInfo updateRetailerInfo(Long id, RetailerInfo updatedRetailerInfo) {
+    //     Optional<RetailerInfo> existingRetailerOpt = retailerInfoRepository.findById(id);
+    
+    //     if (existingRetailerOpt.isPresent()) {
+    //         RetailerInfo existingRetailer = existingRetailerOpt.get();
+    
+    //         // Check if the updated retailer name already exists (excluding the current retailer)
+    //         boolean retailerNameExists = retailerInfoRepository.existsByRetailerNameAndIdNot(
+    //                 updatedRetailerInfo.getRetailerName(), id);
+    
+    //         if (retailerNameExists) {
+           
+    //             throw new RuntimeException("Retailer name '" + updatedRetailerInfo.getRetailerName() 
+    //                 + "' already exists. Try another.");
+    //         }
+    
+    //         // Update retailer info
+    //         existingRetailer.setRetailerName(updatedRetailerInfo.getRetailerName());
+    //         existingRetailer.setArea(updatedRetailerInfo.getArea());
+    //         existingRetailer.setPhoneNumber(updatedRetailerInfo.getPhoneNumber());
+    //         existingRetailer.setAddress(updatedRetailerInfo.getAddress());
+    
+    //         return retailerInfoRepository.save(existingRetailer);
+    //     } else {
+    //         throw new RuntimeException("Retailer not found with ID: " + id);
+    //     }
+    // }
+
+    public RetailerInfo updateRetailerInfo(Long id, RetailerInfo updatedRetailerInfo) {
         Optional<RetailerInfo> existingRetailerOpt = retailerInfoRepository.findById(id);
     
         if (existingRetailerOpt.isPresent()) {
             RetailerInfo existingRetailer = existingRetailerOpt.get();
     
-            // Check if the updated retailer name already exists (excluding the current retailer)
-            boolean retailerNameExists = retailerInfoRepository.existsByRetailerNameAndIdNot(
-                    updatedRetailerInfo.getRetailerName(), id);
+            // Only check for duplicate retailer name if it's changed
+            if (!existingRetailer.getRetailerName().equalsIgnoreCase(updatedRetailerInfo.getRetailerName())) {
+                boolean retailerNameExists = retailerInfoRepository.existsByRetailerNameAndIdNot(
+                        updatedRetailerInfo.getRetailerName(), id);
     
-            if (retailerNameExists) {
-           
-                throw new RuntimeException("Retailer name '" + updatedRetailerInfo.getRetailerName() 
-                    + "' already exists. Try another.");
+                if (retailerNameExists) {
+                    throw new RuntimeException("Retailer name '" + updatedRetailerInfo.getRetailerName()
+                            + "' already exists. Try another.");
+                }
+    
+                existingRetailer.setRetailerName(updatedRetailerInfo.getRetailerName());
             }
     
-            // Update retailer info
-            existingRetailer.setRetailerName(updatedRetailerInfo.getRetailerName());
+            // Update other fields regardless
             existingRetailer.setArea(updatedRetailerInfo.getArea());
             existingRetailer.setPhoneNumber(updatedRetailerInfo.getPhoneNumber());
             existingRetailer.setAddress(updatedRetailerInfo.getAddress());
@@ -126,4 +156,5 @@ public class RetailerBalanceService {
             throw new RuntimeException("Retailer not found with ID: " + id);
         }
     }
+    
 }
