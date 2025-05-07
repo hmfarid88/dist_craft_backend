@@ -96,7 +96,7 @@ public class ProductController {
     ZonedDateTime dhakaTime = ZonedDateTime.now(ZoneId.of("Asia/Dhaka"));
 
     for (ProductStock product : newProducts) {
-    if (productRepository.existsByUsernameAndProductnoNotInProductSale(product.getUsername(),
+    if (productRepository.existsByUsernameAndProductno(product.getUsername(),
     product.getProductno())) {
     throw new DuplicateEntityException("Product " + product.getProductno() + " is already exists!");
     }

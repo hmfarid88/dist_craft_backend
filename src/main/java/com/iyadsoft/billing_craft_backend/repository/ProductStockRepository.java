@@ -40,11 +40,8 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Long
       List<UpdateableStock> getProductsStockByUsernameAndSupplier(String username);
 
            @Query("SELECT CASE WHEN COUNT(ps) > 0 THEN TRUE ELSE FALSE END " +
-           "FROM ProductStock ps " +
-           "WHERE ps.username = :username " +
-           "AND ps.productno = :productno " +
-           "AND ps.proId NOT IN (SELECT psale.productStock.proId FROM ProductSale psale)")
-    boolean existsByUsernameAndProductnoNotInProductSale(String username, String productno);
+           "FROM ProductStock ps WHERE ps.username = :username AND ps.productno = :productno")
+           boolean existsByUsernameAndProductno(String username, String productno);
 
    
 @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProductStockCountDTO(" +
