@@ -186,7 +186,7 @@ Optional<Double> getTotalProductValue(@Param("username") String username);
 +
 "FROM ProductSale s " +
 "WHERE s.username = :username AND s.saleType = 'customer' " +
-"AND s.date= :date GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.color")
+"AND s.date= :date GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.color ORDER BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.color")
 List<SaleSummaryDto> getDatewiseSaleSummary(String username, LocalDate date);
 
 }

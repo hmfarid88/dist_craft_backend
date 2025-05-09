@@ -52,7 +52,7 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Long
        "FROM ProductStock p " +
        "LEFT JOIN p.productSale ps " +
        "WHERE p.username = :username " +
-       "GROUP BY p.category, p.brand, p.productName, p.color, p.pprice, p.sprice")
+       "GROUP BY p.category, p.brand, p.productName, p.color, p.pprice, p.sprice ORDER BY p.category, p.brand, p.productName, p.color")
 List<ProductStockCountDTO> countProductByUsernameGroupByCategoryBrandProductName(
         @Param("username") String username,
         @Param("today") LocalDate today);
