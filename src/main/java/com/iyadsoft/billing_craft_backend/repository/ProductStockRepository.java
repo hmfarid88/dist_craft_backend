@@ -46,7 +46,7 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Long
    
 @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProductStockCountDTO(" +
        "p.category, p.brand, p.productName, p.color, p.pprice, p.sprice, " +
-       "SUM(CASE WHEN p.date < :today THEN 1 ELSE 0 END)-SUM(CASE WHEN p.date < :today AND ps.date < :today THEN 1 ELSE 0 END), " +                    // Total qty entered before today
+       "SUM(CASE WHEN p.date < :today THEN 1 ELSE 0 END)-SUM(CASE WHEN p.date < :today AND ps.date < :today THEN 1 ELSE 0 END), " +
        "SUM(CASE WHEN p.date = :today THEN 1 ELSE 0 END), " +      
        "SUM(CASE WHEN ps.date = :today THEN 1 ELSE 0 END)) " + 
        "FROM ProductStock p " +
