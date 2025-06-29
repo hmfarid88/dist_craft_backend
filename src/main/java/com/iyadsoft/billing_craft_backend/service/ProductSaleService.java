@@ -109,7 +109,7 @@ public class ProductSaleService {
         String smsResponse = smsService.sendSms(
                 savedCustomer.getUsername(),
                 phoneNumber,
-                "Dear " + savedCustomer.getCName() + ", your total bill is ৳" + formattedTotalValue + ". And total due is ৳"
+                "Dear " + savedCustomer.getCName() + ", your total bill is Tk " + formattedTotalValue + ". And total due is Tk "
                         + formattedTotalDue + " Thanks from " + savedCustomer.getUsername() + ".");
 
         System.out.println("SMS API Response: " + smsResponse);

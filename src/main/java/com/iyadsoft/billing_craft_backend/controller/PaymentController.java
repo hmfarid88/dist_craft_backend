@@ -153,8 +153,8 @@ public class PaymentController {
                 retailerPayment.getUsername(),
                 phoneNumber,
                 "Dear " + retailerPayment.getRetailerName() +
-                        ", your payment is ৳" + retailerPayment.getAmount() +
-                        ". And total due is ৳" + balance +
+                        ", your payment is Tk " + retailerPayment.getAmount() +
+                        ". And total due is Tk " + balance +
                         ". Thanks from " + retailerPayment.getUsername() + "!");
 
         System.out.println("SMS API Response: " + smsResponse);
