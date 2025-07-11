@@ -78,4 +78,25 @@ public class SupplierBalanceService {
 
         return combinedDetails;
     }
+
+    public List<SupplierDetailsDto> getDatewiseSupplierDetails(String username, String supplierName, LocalDate startDate, LocalDate endDate) {
+        // Fetch data from each repository method
+        List<SupplierDetailsDto> productPurchases = productStockRepository.findDatewiseProductDetailsByUsernameAndSupplierName(username, supplierName, startDate, endDate);
+        List<SupplierDetailsDto> productSales = productSaleRepository.findDatewiseProductSalesByUsernameAndSupplierName(username, supplierName, startDate, endDate);
+        List<SupplierDetailsDto> payments = supplierPaymentRepository.findDatewiseDetailsPaymentByUsernameAndSupplier(username, supplierName, startDate, endDate);
+        List<SupplierDetailsDto> receipts = supplierPaymentRepository.findDatewiseDetailsReceiveByUsernameAndSupplier(username, supplierName, startDate, endDate);
+
+        // Combine the results
+        List<SupplierDetailsDto> combinedDetails = new ArrayList<>();
+        combinedDetails.addAll(productPurchases);
+        combinedDetails.addAll(productSales);
+        combinedDetails.addAll(payments);
+        combinedDetails.addAll(receipts);
+
+        // Sort the combined list by date (assuming date is a field in
+        // SupplierDetailsDto)
+        combinedDetails.sort(Comparator.comparing(SupplierDetailsDto::getDate));
+
+        return combinedDetails;
+    }
 }

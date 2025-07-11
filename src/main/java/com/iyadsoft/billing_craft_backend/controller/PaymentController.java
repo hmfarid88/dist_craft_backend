@@ -202,8 +202,8 @@ public class PaymentController {
 
     @GetMapping("/getDatewiseSupplier-details")
     public List<SupplierDetailsDto> getDatewiseSupplierDetailsByUsername(@RequestParam String username,
-            @RequestParam String supplierName, @RequestParam LocalDate date) {
-        return supplierBalanceService.getSupplierDetails(username, supplierName, date);
+            @RequestParam String supplierName, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        return supplierBalanceService.getDatewiseSupplierDetails(username, supplierName, startDate, endDate);
     }
 
     @GetMapping("/getMonthlyExpense")

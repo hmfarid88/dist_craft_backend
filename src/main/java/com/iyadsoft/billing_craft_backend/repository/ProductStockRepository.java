@@ -82,6 +82,9 @@ List<ProductStockCountDTO> countProductByUsernameGroupByCategoryBrandProductName
       @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.supplierInvoice, COUNT(ps.productno), SUM(ps.pprice), 0.0, 0.0, 0.0, 'No') FROM ProductStock ps WHERE ps.username = :username AND ps.supplier = :supplierName AND ps.date <= :date GROUP BY ps.date, ps.supplierInvoice")
       List<SupplierDetailsDto> findProductDetailsByUsernameAndSupplierName(String username, String supplierName, LocalDate date);
 
+      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.supplierInvoice, COUNT(ps.productno), SUM(ps.pprice), 0.0, 0.0, 0.0, 'No') FROM ProductStock ps WHERE ps.username = :username AND ps.supplier = :supplierName AND ps.date BETWEEN :startDate AND :endDate GROUP BY ps.date, ps.supplierInvoice")
+      List<SupplierDetailsDto> findDatewiseProductDetailsByUsernameAndSupplierName(String username, String supplierName, LocalDate startDate, LocalDate endDate);
+      
       @Query("SELECT ps FROM ProductStock ps LEFT JOIN ps.productSale psale WHERE ps.username=:username AND ps.supplier=:supplier AND ps.productName=:productName AND ps.pprice=:pprice AND psale IS NULL")
       List<ProductStock> findByUsernameAndSupplierAndProductNameAndPprice(String username, String supplier, String productName, Double pprice);
 
