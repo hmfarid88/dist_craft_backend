@@ -233,6 +233,11 @@ public class PaymentController {
         return retailerInfoRepository.findAllByUsernameOrderByRetailerNameAsc(username);
     }
 
+    @GetMapping("/getTodaysRetailerPayment")
+    public List<RetailerPayment> getRetailerPayForCurrentDay(@RequestParam String username) {
+        return retailerPaymentService.getRetailerPayForCurrentDay(username);
+    }
+
     @GetMapping("/getRetailerPayment")
     public List<RetailerPayment> getRetailerPayForCurrentMonth(@RequestParam String username) {
         return retailerPaymentService.getRetailerPayForCurrentMonth(username);
@@ -245,8 +250,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getDatewiseRetailerBalance")
-    public List<RetailerBalanceDto> getDatewiseRetailerBalance(@RequestParam String username,
-            @RequestParam LocalDate date) {
+    public List<RetailerBalanceDto> getDatewiseRetailerBalance(@RequestParam String username, @RequestParam LocalDate date) {
         return retailerBalanceService.getRetailerBalance(username, date);
     }
 

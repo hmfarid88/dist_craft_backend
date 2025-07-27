@@ -24,6 +24,10 @@ public class RetailerPaymentService {
         return retailerPaymentRepository.findRetailerPayByMonth(year, month, username);
     }
 
+    public List<RetailerPayment> getRetailerPayForCurrentDay(String username) {
+        return retailerPaymentRepository.findTodaysRetailerPaymentByUsername(username);
+    }
+
     public List<RetailerPayment> getDatewiseRetailerPay(String username, LocalDate startDate, LocalDate endDate) {
         return retailerPaymentRepository.findDatewiseRetailerPaymentByUsername(username, startDate, endDate);
     }
