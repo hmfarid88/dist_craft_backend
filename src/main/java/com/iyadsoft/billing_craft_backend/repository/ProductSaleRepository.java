@@ -173,7 +173,7 @@ Optional<Double> findTotalSaleByCustomerName(@Param("cName") String cName, @Para
 @Query("""
     SELECT c.cName, 
            SUM((p.sprice - COALESCE(p.discount, 0) - COALESCE(p.offer, 0)) + COALESCE(c.vatAmount, 0)), 
-           SUM(CASE WHEN p.date = CURRENT_DATE THEN 
+           SUM(CASE WHEN p.date = :date THEN 
                     (p.sprice - COALESCE(p.discount, 0) - COALESCE(p.offer, 0)) + COALESCE(c.vatAmount, 0)
                     ELSE 0 END)
     FROM ProductSale p

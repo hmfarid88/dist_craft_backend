@@ -331,8 +331,7 @@ public class ProductController {
     }
 
     @GetMapping("/products/not-in-sales")
-    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username,
-            @RequestParam String productno) {
+    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username, @RequestParam String productno) {
         return productStockService.getProductsNotInSalesStock(username, productno);
     }
 

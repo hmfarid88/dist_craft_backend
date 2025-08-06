@@ -94,7 +94,7 @@ public class ProductStockService {
         if (existingProductOpt.isPresent()) {
             ProductStock existingProduct = existingProductOpt.get();
     
-            boolean productNoExists = productStockRepository.existsByProductnoAndProIdNot(updatedProduct.getProductno(), proId);
+            boolean productNoExists = productStockRepository.existsByUsernameAndProductnoAndProIdNot(updatedProduct.getUsername(), updatedProduct.getProductno(), proId);
             if (productNoExists) {
                 
                 throw new RuntimeException("Product number " + updatedProduct.getProductno() + " already exists.");
