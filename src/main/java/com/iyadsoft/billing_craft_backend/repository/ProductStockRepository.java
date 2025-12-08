@@ -30,6 +30,11 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Long
       "WHERE ps.saleType = 'returned' AND ps.username = :username")
       List<SaleReturnDto> getReturnedsStockByUsername(String username);
 
+      @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SaleReturnDto(ps.category, ps.brand, ps.productName, ps.color, ps.productno, ps.supplier, ps.supplierInvoice, ps.pprice, ps.sprice, ps.rDate, ps.time) " +
+      "FROM ProductStock ps " +
+       "WHERE ps.status = 'returned' AND ps.username = :username")
+      List<SaleReturnDto> getReturnedsSaleByUsername(String username);
+
       @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.ProductEntryDto(ps.category, ps.brand, ps.productName, ps.pprice, ps.sprice, ps.color, ps.supplier, ps.supplierInvoice, ps.productno, ps.date, ps.time) FROM ProductStock ps WHERE ps.username=:username AND MONTH(ps.date) = MONTH(CURRENT_DATE) AND YEAR(ps.date) = YEAR(CURRENT_DATE)")
       List<ProductEntryDto> getProductsStockByUsernameForCurrentMonth(@Param("username") String username);
 
@@ -112,5 +117,7 @@ List<ProductStockCountDTO> countProductByUsernameGroupByCategoryBrandProductName
             "WHERE ps.username = :username AND ps.supplierInvoice = :supplierInvoice " +
             "GROUP BY ps.productName, ps.color, ps.pprice")
      List<SupplierProductDto> findProductInfoByInvoiceAndUser(@Param("username") String username, @Param("supplierInvoice") String supplierInvoice);
+
+            ProductStock findByProductnoAndUsername(String productno, String username);
      
 }

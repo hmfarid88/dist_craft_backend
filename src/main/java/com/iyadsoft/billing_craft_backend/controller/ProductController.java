@@ -208,6 +208,11 @@ public class ProductController {
         return productRepository.getReturnedsStockByUsername(username);
     }
 
+    @GetMapping("/getReturnedSale")
+    public List<SaleReturnDto> getReturnedSaleByUsername(@RequestParam String username) {
+        return productRepository.getReturnedsSaleByUsername(username);
+    }
+
     @GetMapping("/getMonthlyProductEntry")
     public List<ProductEntryDto> getProductsStockByUsernameForCurrentMonth(@RequestParam String username) {
         return productRepository.getProductsStockByUsernameForCurrentMonth(username);

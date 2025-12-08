@@ -48,7 +48,7 @@ public class ProductSaleService {
         this.productSaleRepository = productSaleRepository;
         this.productStockRepository = productStockRepository;
         this.retailerPaymentRepository = retailerPaymentRepository;
-        this.retailerInfoRepository=retailerInfoRepository;
+        this.retailerInfoRepository = retailerInfoRepository;
     }
 
     public List<ProductSale> processSales(SalesRequest saleRequest) {
@@ -100,16 +100,18 @@ public class ProductSaleService {
             // Save each ProductSale item
             savedSalesItems.add(productSaleRepository.save(productSale));
         }
-        double vat=customer.getVatAmount();
+        double vat = customer.getVatAmount();
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("en", "IN"));
-        String formattedTotalValue = numberFormat.format(totalValue+vat);
-        String phoneNumber=retailerInfoRepository.findByRetailerNameAndUsername(customer.getCName(), customer.getUsername());
+        String formattedTotalValue = numberFormat.format(totalValue + vat);
+        String phoneNumber = retailerInfoRepository.findByRetailerNameAndUsername(customer.getCName(),
+                customer.getUsername());
         double totalDue = balance + totalValue + vat;
         String formattedTotalDue = numberFormat.format(totalDue);
         String smsResponse = smsService.sendSms(
                 savedCustomer.getUsername(),
                 phoneNumber,
-                "Dear " + savedCustomer.getCName() + ", your total bill is Tk " + formattedTotalValue + ". And total due is Tk "
+                "Dear " + savedCustomer.getCName() + ", your total bill is Tk " + formattedTotalValue
+                        + ". And total due is Tk "
                         + formattedTotalDue + " Thanks from " + savedCustomer.getUsername() + ".");
 
         System.out.println("SMS API Response: " + smsResponse);
@@ -130,6 +132,13 @@ public class ProductSaleService {
 
         if (saleCount == 1) {
             customerRepository.deleteByCid(cid);
+        }
+
+        ProductStock productStock = productStockRepository.findByProductnoAndUsername(productno, username);
+            if (productStock != null) {
+            productStock.setStatus("returned");
+            productStock.setRDate(LocalDate.now());
+            productStockRepository.save(productStock);
         }
     }
 
@@ -165,6 +174,6 @@ public class ProductSaleService {
     }
 
     public List<SaleSummaryDto> getDatewiseSaleSummary(String username, LocalDate date) {
-       return productSaleRepository.getDatewiseSaleSummary(username, date);
+        return productSaleRepository.getDatewiseSaleSummary(username, date);
     }
 }

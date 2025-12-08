@@ -35,6 +35,8 @@ public class ProductStock {
     private String productno;
     private LocalDate date;
     private LocalTime time;
+    private String status;
+    private LocalDate rDate;
 
    @OneToMany(mappedBy = "productStock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductSale> productSale;
