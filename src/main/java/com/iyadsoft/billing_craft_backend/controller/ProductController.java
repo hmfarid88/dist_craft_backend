@@ -38,12 +38,14 @@ import com.iyadsoft.billing_craft_backend.entity.Currency;
 import com.iyadsoft.billing_craft_backend.entity.Pricedrop;
 import com.iyadsoft.billing_craft_backend.entity.ProductStock;
 import com.iyadsoft.billing_craft_backend.entity.ProductName;
+import com.iyadsoft.billing_craft_backend.entity.ProductOrder;
 import com.iyadsoft.billing_craft_backend.entity.SupplierName;
 import com.iyadsoft.billing_craft_backend.entity.Vat;
 import com.iyadsoft.billing_craft_backend.repository.BrandNameRepository;
 import com.iyadsoft.billing_craft_backend.repository.CategoryNameRepository;
 import com.iyadsoft.billing_craft_backend.repository.ColorNameRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProductNameRepository;
+import com.iyadsoft.billing_craft_backend.repository.ProductOrderRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProductStockRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProductSaleRepository;
 import com.iyadsoft.billing_craft_backend.repository.SupplierNameRepository;
@@ -63,6 +65,7 @@ public class ProductController {
     private final ProductSaleRepository productSaleRepository;
     private final CategoryNameRepository categoryNameRepository;
     private final BrandNameRepository brandNameRepository;
+    private final ProductOrderRepository productOrderRepository;
 
     @Autowired
     private ProductStockService productStockService;
@@ -77,7 +80,8 @@ public class ProductController {
     ProductController(ProductStockRepository productRepository, ProductNameRepository productNameRepository,
             ColorNameRepository colorNameRepository, SupplierNameRepository supplierNameRepository,
             ProductSaleRepository productSaleRepository, CategoryNameRepository categoryNameRepository,
-            BrandNameRepository brandNameRepository) {
+            BrandNameRepository brandNameRepository,
+            ProductOrderRepository productOrderRepository) {
         this.productRepository = productRepository;
         this.productNameRepository = productNameRepository;
         this.colorNameRepository = colorNameRepository;
@@ -85,27 +89,27 @@ public class ProductController {
         this.productSaleRepository = productSaleRepository;
         this.categoryNameRepository = categoryNameRepository;
         this.brandNameRepository = brandNameRepository;
+        this.productOrderRepository = productOrderRepository;
 
     }
 
     @PostMapping("/addProducts")
     @Transactional
-    public ResponseEntity<List<ProductStock>> newProducts(@RequestBody
-    List<ProductStock> newProducts) {
-    List<ProductStock> savedProducts = new ArrayList<>();
-    ZonedDateTime dhakaTime = ZonedDateTime.now(ZoneId.of("Asia/Dhaka"));
+    public ResponseEntity<List<ProductStock>> newProducts(@RequestBody List<ProductStock> newProducts) {
+        List<ProductStock> savedProducts = new ArrayList<>();
+        ZonedDateTime dhakaTime = ZonedDateTime.now(ZoneId.of("Asia/Dhaka"));
 
-    for (ProductStock product : newProducts) {
-    if (productRepository.existsByUsernameAndProductno(product.getUsername(),
-    product.getProductno())) {
-    throw new DuplicateEntityException("Product " + product.getProductno() + " is already exists!");
-    }
-    product.setTime(dhakaTime.toLocalTime());
-    savedProducts.add(product);
-    }
+        for (ProductStock product : newProducts) {
+            if (productRepository.existsByUsernameAndProductno(product.getUsername(),
+                    product.getProductno())) {
+                throw new DuplicateEntityException("Product " + product.getProductno() + " is already exists!");
+            }
+            product.setTime(dhakaTime.toLocalTime());
+            savedProducts.add(product);
+        }
 
-    savedProducts = productRepository.saveAll(savedProducts);
-    return ResponseEntity.status(HttpStatus.CREATED).body(savedProducts);
+        savedProducts = productRepository.saveAll(savedProducts);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProducts);
     }
 
     @PostMapping("/addNewCategory")
@@ -161,15 +165,15 @@ public class ProductController {
         }
         supplierNameRepository.save(supplierName);
         return ResponseEntity.ok("Supplier Added Successfully");
-      }
+    }
 
-      @PostMapping("/currencyEntry")
-      public Currency saveOrUpdateCurrency(@RequestParam String username, @RequestParam String currency) {
-          return currencyService.saveOrUpdateCurrency(username, currency);
-      }
+    @PostMapping("/currencyEntry")
+    public Currency saveOrUpdateCurrency(@RequestParam String username, @RequestParam String currency) {
+        return currencyService.saveOrUpdateCurrency(username, currency);
+    }
 
-      @GetMapping("/getCurrency")
-      public Currency getCurrencyByUsername(@RequestParam String username) {
+    @GetMapping("/getCurrency")
+    public Currency getCurrencyByUsername(@RequestParam String username) {
         return currencyService.getCurrencyByUsername(username);
     }
 
@@ -201,6 +205,11 @@ public class ProductController {
     @GetMapping("/getProductStock")
     public List<ProductStock> getProductsStockByUsername(@RequestParam String username) {
         return productRepository.getProductsStockByUsername(username);
+    }
+
+    @GetMapping("/getSalesProductStock")
+    public List<ProductStock> getSalesProductsStockByUsername(@RequestParam String username) {
+        return productRepository.getSalesProductsStockByUsername(username);
     }
 
     @GetMapping("/getReturnedStock")
@@ -289,11 +298,13 @@ public class ProductController {
     }
 
     @GetMapping("/datewiseStockSummary")
-    public ResponseEntity<List<ProductStockCountDTO>> getDatewiseStockSummary(@RequestParam String username, LocalDate today) {
-        List<ProductStockCountDTO> productCounts = productStockService.getDatewiseProductCountByUserAndGroup(username, today);
+    public ResponseEntity<List<ProductStockCountDTO>> getDatewiseStockSummary(@RequestParam String username,
+            LocalDate today) {
+        List<ProductStockCountDTO> productCounts = productStockService.getDatewiseProductCountByUserAndGroup(username,
+                today);
         return ResponseEntity.ok(productCounts);
     }
-    
+
     @PutMapping("/vatEntry")
     public Vat saveOrUpdateVat(@RequestBody Vat vat) {
         return vatService.saveOrUpdateVat(vat);
@@ -336,16 +347,16 @@ public class ProductController {
     }
 
     @GetMapping("/products/not-in-sales")
-    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username, @RequestParam String productno) {
+    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username,
+            @RequestParam String productno) {
         return productStockService.getProductsNotInSalesStock(username, productno);
     }
 
-
-@PutMapping("/products/update/{proId}")
-public ResponseEntity<?> updateProductStock(@PathVariable Long proId, @RequestBody ProductStock updatedProduct) {
-    productStockService.updateProductStock(proId, updatedProduct);
-    return ResponseEntity.ok(Collections.singletonMap("message", "Product updated successfully!"));
-}
+    @PutMapping("/products/update/{proId}")
+    public ResponseEntity<?> updateProductStock(@PathVariable Long proId, @RequestBody ProductStock updatedProduct) {
+        productStockService.updateProductStock(proId, updatedProduct);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Product updated successfully!"));
+    }
 
     @Transactional
     @DeleteMapping("/deleteCategory")
@@ -400,20 +411,20 @@ public ResponseEntity<?> updateProductStock(@PathVariable Long proId, @RequestBo
     }
 
     @GetMapping("/getPreviousInvoice")
-public ResponseEntity<InvoiceDataDTO> getPreviousInvoice(@RequestParam String username, @RequestParam Long saleId) {
-    return productSaleRepository.getPreviousInvoiceBySaleId(username, saleId)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-}
+    public ResponseEntity<InvoiceDataDTO> getPreviousInvoice(@RequestParam String username, @RequestParam Long saleId) {
+        return productSaleRepository.getPreviousInvoiceBySaleId(username, saleId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-@GetMapping("/getNextInvoice")
-public ResponseEntity<InvoiceDataDTO> getNextInvoice(@RequestParam String username, @RequestParam Long saleId) {
-    return productSaleRepository.getNextInvoiceBySaleId(username, saleId)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-}
+    @GetMapping("/getNextInvoice")
+    public ResponseEntity<InvoiceDataDTO> getNextInvoice(@RequestParam String username, @RequestParam Long saleId) {
+        return productSaleRepository.getNextInvoiceBySaleId(username, saleId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
- @GetMapping("/product/last-entry")
+    @GetMapping("/product/last-entry")
     public ResponseEntity<?> getLastEntry(@RequestParam String username, @RequestParam String brand,
             @RequestParam String productName) {
         Optional<ProductStock> lastEntry = productRepository
@@ -426,6 +437,41 @@ public ResponseEntity<InvoiceDataDTO> getNextInvoice(@RequestParam String userna
             return ResponseEntity.ok(data);
         } else {
             return ResponseEntity.ok().build();
+        }
+    }
+
+    @PostMapping("/addOrders")
+    @Transactional
+    public ResponseEntity<List<ProductOrder>> newOrders(@RequestBody List<ProductOrder> newProducts) {
+        List<ProductOrder> savedProducts = new ArrayList<>();
+        for (ProductOrder product : newProducts) {
+            if (productOrderRepository.existsByUsernameAndProductno(product.getUsername(),
+                    product.getProductno())) {
+                throw new DuplicateEntityException("Product " + product.getProductno() + " is already exists!");
+            }
+            savedProducts.add(product);
+        }
+        savedProducts = productOrderRepository.saveAll(savedProducts);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProducts);
+    }
+
+    @GetMapping("/getOrderList")
+    public List<ProductOrder> getProductsOrderByUsername(@RequestParam String username) {
+        return productStockService.getOrdersByUsername(username);
+    }
+
+    @DeleteMapping("/product-order-delete")
+    public ResponseEntity<String> deleteOrder(
+            @RequestParam String username,
+            @RequestParam Long proId) {
+
+        boolean deleted = productStockService.deleteOrder(username, proId);
+
+        if (deleted) {
+            return ResponseEntity.ok("Product order deleted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No matching product order found");
         }
     }
 

@@ -37,6 +37,5 @@ public class ProductSale {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pro_id")
     private ProductStock productStock;
-
        
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.iyadsoft.billing_craft_backend.entity.InvoiceNote;
 import com.iyadsoft.billing_craft_backend.entity.RetailerInfo;
 import com.iyadsoft.billing_craft_backend.entity.ShopInfo;
@@ -61,14 +60,17 @@ public class ShopController {
     public RetailerInfo saveOrUpdateRetailerInfo(@RequestBody RetailerInfo retailerInfo) {
         return shopInfoService.saveRetailerInfo(retailerInfo);
     }
+
     @PutMapping("/addSrInfo")
     public SrInfo saveSrInfo(@RequestBody SrInfo srInfo) {
         return shopInfoService.saveSrInfo(srInfo);
     }
+
     @GetMapping("/getRetailerInfo")
     public List<RetailerInfo> getAllRetailers(@RequestParam String username) {
         return shopInfoService.getRetailerInfoByUsername(username);
     }
+    
     @GetMapping("/getSrInfo")
     public List<SrInfo> getAllSr(@RequestParam String username) {
         return shopInfoService.getSrInfoByUsername(username);

@@ -23,4 +23,12 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
 
     @Query("SELECT SUM(c.vatAmount) FROM Customer c WHERE c.cName = :cName AND c.username = :username")
     Optional<Double> findTotalVatByCustomerName(@Param("cName") String cName, @Param("username") String username);
+
+    @Modifying
+    @Query("""
+        UPDATE Customer c
+        SET c.cName = :newName
+        WHERE c.cName = :oldName
+    """)
+    int updateSoldByName(String oldName, String newName);
 }

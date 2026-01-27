@@ -9,12 +9,15 @@ import com.iyadsoft.billing_craft_backend.controller.DuplicateEntityException;
 import com.iyadsoft.billing_craft_backend.dto.ProductDetailDTO;
 import com.iyadsoft.billing_craft_backend.dto.ProductStockCountDTO;
 import com.iyadsoft.billing_craft_backend.entity.Pricedrop;
+import com.iyadsoft.billing_craft_backend.entity.ProductOrder;
 import com.iyadsoft.billing_craft_backend.entity.ProductStock;
 import com.iyadsoft.billing_craft_backend.repository.ProductStockRepository;
 
 import jakarta.transaction.Transactional;
 
 import com.iyadsoft.billing_craft_backend.repository.PricedropRepository;
+import com.iyadsoft.billing_craft_backend.repository.ProductOrderRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductStockService {
     private final ProductStockRepository productStockRepository;
     private final PricedropRepository pricedropRepository;
+    private final ProductOrderRepository productOrderRepository;
    
     @Transactional
     public void handlePriceDrop(String username, String supplier, String productName, String save, Double pprice, Double newPprice,
@@ -120,5 +124,14 @@ public class ProductStockService {
 
     public List<ProductDetailDTO> getAllProductOccurrences(String username, String productno) {
         return productStockRepository.findAllProductOccurrences(username, productno);
+    }
+
+    public List<ProductOrder> getOrdersByUsername(String username) {
+        return productOrderRepository.findByUsername(username);
+    }
+
+    public boolean deleteOrder(String username, Long proId) {
+        int deleted = productOrderRepository.deleteByUsernameAndProId(username, proId);
+        return deleted > 0;
     }
 }

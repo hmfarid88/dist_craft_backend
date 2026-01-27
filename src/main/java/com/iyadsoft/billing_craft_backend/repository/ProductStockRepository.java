@@ -22,7 +22,24 @@ import com.iyadsoft.billing_craft_backend.entity.ProductStock;
 public interface ProductStockRepository extends JpaRepository<ProductStock, Long> {
 
       @Query("SELECT ps FROM ProductStock ps LEFT JOIN ps.productSale psale WHERE ps.username=:username AND psale IS NULL")
-      List<ProductStock> getProductsStockByUsername(String username);
+      List<ProductStock> getSalesProductsStockByUsername(String username);
+
+@Query("""
+    SELECT ps
+    FROM ProductStock ps
+    LEFT JOIN ps.productSale psale
+    WHERE ps.username = :username
+      AND psale IS NULL
+      AND NOT EXISTS (
+          SELECT 1
+          FROM ProductOrder po
+          WHERE po.proId = ps.proId
+            AND po.username = :username
+      )
+""")
+List<ProductStock> getProductsStockByUsername(String username);
+
+
 
       @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SaleReturnDto(ps.productStock.category, ps.productStock.brand, ps.productStock.productName, ps.productStock.color, ps.productStock.productno, ps.productStock.supplier, ps.productStock.supplierInvoice, ps.productStock.pprice, ps.productStock.sprice, ps.productStock.date, ps.productStock.time) " +
       "FROM ProductSale ps " +

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -58,5 +59,11 @@ Optional<Double> getTotalPayment(@Param("username") String username);
       @Param("username") String username,
       @Param("retailerName") String retailerName);
       
-
+@Modifying
+    @Query("""
+        UPDATE RetailerPayment rp
+        SET rp.retailerName = :newName
+        WHERE rp.retailerName = :oldName
+    """)
+    int updateRetailerName(String oldName, String newName);
 }
