@@ -23,6 +23,7 @@ public class ProductSale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long saleId;
     private String saleType;
+    private String saleNote;
     private Double sprice;
     private Double discount;
     private Double offer;

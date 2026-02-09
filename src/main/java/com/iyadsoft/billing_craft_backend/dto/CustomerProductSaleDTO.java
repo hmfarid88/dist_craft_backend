@@ -15,6 +15,7 @@ public class CustomerProductSaleDTO {
     private String phoneNumber;
     private String address;
     private String soldby;
+    private String saleNote;
     private String category;
     private String brand;
     private String productName;

@@ -23,17 +23,17 @@ import com.iyadsoft.billing_craft_backend.entity.ProductSale;
 
 @Repository
 public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> {
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid,  s.productStock.proId, s.username) FROM ProductSale s WHERE s.username=:username AND s.saleType='customer' AND s.date = CURRENT_DATE")
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid,  s.productStock.proId, s.username) FROM ProductSale s WHERE s.username=:username AND s.saleType='customer' AND s.date = CURRENT_DATE")
         List<CustomerProductSaleDTO> getProductsSaleByUsername(String username);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.username = :username AND s.saleType = 'customer' " +
                         "AND MONTH(s.date) = MONTH(CURRENT_DATE) AND YEAR(s.date) = YEAR(CURRENT_DATE)")
         List<CustomerProductSaleDTO> getProductsSaleByUsernameForCurrentMonth(String username);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.saleType = 'customer' " +
@@ -61,7 +61,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "AND s.date BETWEEN :startDate AND :endDate GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.pprice, s.sprice ")
         List<ProfitItemDto> getDatewiseProfitSaleByUsername(String username, LocalDate startDate, LocalDate endDate);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.productStock.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.productStock.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.username = :username AND s.saleType = 'vendor' " +
@@ -69,7 +69,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
         List<CustomerProductSaleDTO> getVendorSaleByUsernameForCurrentMonth(String username);
 
         
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.productStock.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.productStock.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
                         +
                         "FROM ProductSale s " +
                         "WHERE s.saleType = 'vendor' " +

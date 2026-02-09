@@ -159,6 +159,7 @@ public List<ProductSale> processSales(SalesRequest saleRequest) {
         productSale.setCustomer(savedCustomer);
         productSale.setProductStock(productStock);
         productSale.setSaleType(salesItemDTO.getSaleType());
+        productSale.setSaleNote(salesItemDTO.getSaleNote());
         productSale.setSprice(salesItemDTO.getSprice());
         productSale.setDiscount(salesItemDTO.getDiscount());
         productSale.setOffer(salesItemDTO.getOffer());

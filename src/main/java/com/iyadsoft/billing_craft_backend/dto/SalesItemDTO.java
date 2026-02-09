@@ -11,5 +11,6 @@ public class SalesItemDTO {
     private Double offer;
     private LocalDate date;
     private String saleType;
+    private String saleNote;
     private String username;
 }
