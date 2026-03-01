@@ -111,7 +111,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType='customer' AND ps.username = :username AND ps.customer.cName = :retailerName "
                         +
-                        "GROUP BY ps.date, ps.customer.cid")
+                        "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
         List<RetailerDetailsDto> findProductSalesByUsernameAndReatilerName(String username, String retailerName);
 
         @Query("SELECT ps.customer.cid FROM ProductSale ps WHERE ps.username = :username AND ps.productStock.productno = :productno")
