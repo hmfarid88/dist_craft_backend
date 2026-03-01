@@ -255,8 +255,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getDeatailsRetailerBalance")
-    public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username,
-            @RequestParam String retailerName) {
+    public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username, @RequestParam String retailerName) {
         return retailerBalanceService.getRetailerDetails(username, retailerName);
     }
 

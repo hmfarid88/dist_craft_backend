@@ -52,7 +52,7 @@ List<Object[]> getPaymentsByRetailer(@Param("username") String username, @Param(
 Optional<Double> getTotalPayment(@Param("username") String username);
 
 
-     @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(sp.date, sp.paymentType, 0.0, 0.0, sp.amount) " +
+     @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(sp.date, sp.paymentType, sp.note, 0.0, 0.0, sp.amount) " +
       "FROM RetailerPayment sp " +
       "WHERE sp.username = :username AND sp.retailerName = :retailerName")
       List<RetailerDetailsDto> findDetailsPaymentByUsernameAndRetailerName(
