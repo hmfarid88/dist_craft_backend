@@ -194,8 +194,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getSupplierBalance-details")
-    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username,
-            @RequestParam String supplierName) {
+    public List<SupplierDetailsDto> getSupplierDetailsByUsername(@RequestParam String username, @RequestParam String supplierName) {
         LocalDate date = LocalDate.now();
         return supplierBalanceService.getSupplierDetails(username, supplierName, date);
     }

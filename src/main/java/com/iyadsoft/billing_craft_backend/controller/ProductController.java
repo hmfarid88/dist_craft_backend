@@ -243,6 +243,11 @@ public class ProductController {
         return productRepository.findById(proId);
     }
 
+    @PostMapping("/getProductsByProductNos")
+    public List<ProductStock> getProductsByProductNos(@RequestBody List<String> productNos){
+    return productRepository.findByProductnoIn(productNos);
+     }
+
     @GetMapping("/getProductSale")
     public List<CustomerProductSaleDTO> getProductsSaleByUsername(@RequestParam String username) {
         return productSaleRepository.getProductsSaleByUsername(username);

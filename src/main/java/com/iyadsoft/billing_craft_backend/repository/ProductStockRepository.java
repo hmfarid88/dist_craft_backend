@@ -136,5 +136,6 @@ List<ProductStockCountDTO> countProductByUsernameGroupByCategoryBrandProductName
      List<SupplierProductDto> findProductInfoByInvoiceAndUser(@Param("username") String username, @Param("supplierInvoice") String supplierInvoice);
 
             ProductStock findByProductnoAndUsername(String productno, String username);
-     
+
+      List<ProductStock> findByProductnoIn(List<String> productNos);
 }
