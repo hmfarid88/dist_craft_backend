@@ -2,6 +2,7 @@ package com.iyadsoft.billing_craft_backend.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -49,7 +50,7 @@ public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment
       @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(sp.date, 'Receive', 0L, 0.0, 0.0, 0.0, sp.amount, sp.note) " +
       "FROM SupplierPayment sp " +
       "WHERE sp.paymentType = 'receive' AND sp.username = :username AND sp.supplierName = :supplierName AND sp.date <= :date")
-  List<SupplierDetailsDto> findDetailsReceiveByUsernameAndSupplier(
+      List<SupplierDetailsDto> findDetailsReceiveByUsernameAndSupplier(
       @Param("username") String username,
       @Param("supplierName") String supplierName, @Param("date") LocalDate date);
 
@@ -66,5 +67,9 @@ public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment
       List<SupplierDetailsDto> findDatewiseDetailsReceiveByUsernameAndSupplier(
       @Param("username") String username,
       @Param("supplierName") String supplierName, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+      List<SupplierPayment> findByUsernameAndDateGreaterThanEqualOrderByDateDesc(String username, LocalDate thirtyDaysAgo);
+
+      Optional<SupplierPayment> findByIdAndUsername(Long id, String username);
 
 }

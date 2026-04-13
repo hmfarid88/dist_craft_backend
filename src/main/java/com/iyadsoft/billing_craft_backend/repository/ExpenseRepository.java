@@ -2,6 +2,7 @@ package com.iyadsoft.billing_craft_backend.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e WHERE e.username = :username AND e.date BETWEEN :startDate AND :endDate")
     Double findDatewiseMonthSum(@Param("username") String username, LocalDate startDate, LocalDate endDate);
+
+    List<Expense> findByUsernameAndDateGreaterThanEqualOrderByDateDesc(String username, LocalDate thirtyDaysAgo);
+
+    Optional<Expense> findByIdAndUsername(Long id, String username);
 }

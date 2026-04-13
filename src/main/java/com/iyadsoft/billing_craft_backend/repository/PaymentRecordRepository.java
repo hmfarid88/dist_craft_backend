@@ -2,6 +2,7 @@ package com.iyadsoft.billing_craft_backend.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -89,5 +90,9 @@ Double findCashToday(@Param("username") String username);
         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.PayRecevDetails(p.date, p.paymentNote, 0.0, p.amount) FROM PaymentRecord p WHERE p.paymentType='receive' AND p.username=:username AND p.paymentName=:paymentName ORDER BY p.date, p.id")
         List<PayRecevDetails> findReceivesByUserAndPaymentName(@Param("username") String username,
                         @Param("paymentName") String paymentName);
+
+        List<PaymentRecord> findByUsernameAndDateGreaterThanEqualOrderByDateDesc(String username, LocalDate thirtyDaysAgo);
+
+        Optional<PaymentRecord> findByIdAndUsername(Long id, String username);
 
 }

@@ -66,4 +66,6 @@ Optional<Double> getTotalPayment(@Param("username") String username);
         WHERE rp.retailerName = :oldName
     """)
     int updateRetailerName(String oldName, String newName);
+
+List<RetailerPayment> findByUsernameAndDateGreaterThanEqualOrderByDateDesc(String username, LocalDate thirtyDaysAgo);
 }
