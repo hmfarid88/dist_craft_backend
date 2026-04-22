@@ -90,7 +90,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :cName")
         Double findTotalSoldValueByUsernameAndSupplier(@Param("username") String username, @Param("cName") String supplier);
 
-        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, 'No') "
+        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, ps.saleNote) "
                         +
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date <= :date "
@@ -98,7 +98,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "GROUP BY ps.date, ps.customer.cid")
         List<SupplierDetailsDto> findProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate date);
 
-         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, 'No') "
+         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, ps.saleNote) "
                         +
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date BETWEEN :startDate AND :endDate "
