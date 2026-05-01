@@ -128,7 +128,18 @@ public class PaymentController {
     public RetailerPayment newItem(@RequestBody RetailerPayment retailerPayment) {
         // First, save the payment
         RetailerPayment savedPayment = retailerPaymentRepository.save(retailerPayment);
+if ("bank".equalsIgnoreCase(retailerPayment.getPaymentType())) {
 
+        PaymentRecord paymentRecord = new PaymentRecord();
+        paymentRecord.setDate(retailerPayment.getDate()); // same date
+        paymentRecord.setPaymentName(retailerPayment.getNote()); // note → paymentName
+        paymentRecord.setPaymentType("payment");
+        paymentRecord.setPaymentNote("Retailer Payment"); // optional custom note
+        paymentRecord.setAmount(retailerPayment.getAmount());
+        paymentRecord.setUsername(retailerPayment.getUsername());
+
+        paymentRecordRepository.save(paymentRecord);
+    }
         // 🔢 Calculate total sale
         Double previousSalesTotal = productSaleRepository
                 .findTotalSaleByCustomerName(retailerPayment.getRetailerName(), retailerPayment.getUsername())
@@ -202,7 +213,7 @@ public class PaymentController {
         LocalDate date = LocalDate.now();
         return supplierBalanceService.getSupplierDetails(username, supplierName, date);
     }
-
+    
     @GetMapping("/getDatewiseSupplier-details")
     public List<SupplierDetailsDto> getDatewiseSupplierDetailsByUsername(@RequestParam String username,
             @RequestParam String supplierName, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {

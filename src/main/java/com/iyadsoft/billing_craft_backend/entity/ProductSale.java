@@ -22,13 +22,7 @@ import lombok.NoArgsConstructor;
     @Index(name = "idx_productsale_date", columnList = "date"),
     @Index(name = "idx_productsale_cid", columnList = "cid"),
     @Index(name = "idx_productsale_pro_id", columnList = "pro_id")
-},  uniqueConstraints = {
-        @jakarta.persistence.UniqueConstraint(
-            name = "unique_customer_product",
-            columnNames = {"cid", "pro_id"}
-        )
-    }
-)
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,7 +44,7 @@ public class ProductSale {
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pro_id")
+    @JoinColumn(name = "pro_id", unique = true)
     private ProductStock productStock;
        
 }

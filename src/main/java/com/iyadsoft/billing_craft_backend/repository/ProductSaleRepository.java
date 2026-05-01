@@ -95,7 +95,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date <= :date "
                         +
-                        "GROUP BY ps.date, ps.customer.cid")
+                        "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
         List<SupplierDetailsDto> findProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate date);
 
          @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, ps.saleNote) "
@@ -103,7 +103,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                         "FROM ProductSale ps " +
                         "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date BETWEEN :startDate AND :endDate "
                         +
-                        "GROUP BY ps.date, ps.customer.cid")
+                        "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
         List<SupplierDetailsDto> findDatewiseProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate startDate, LocalDate endDate);
 
         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(ps.date, ps.customer.cid, ps.saleNote, SUM(ps.sprice-ps.discount), sum(ps.customer.vatAmount), 0.0) "
@@ -178,7 +178,7 @@ Optional<Double> findTotalSaleByCustomerName(@Param("cName") String cName, @Para
                     ELSE 0 END)
     FROM ProductSale p
     JOIN p.customer c
-    WHERE p.username = :username AND p.date <= :date 
+    WHERE p.username = :username AND p.date <= :date AND p.saleType = 'customer' 
     GROUP BY c.cName
 """)
 List<Object[]> getProductSaleByRetailer(@Param("username") String username, @Param("date") LocalDate date);
