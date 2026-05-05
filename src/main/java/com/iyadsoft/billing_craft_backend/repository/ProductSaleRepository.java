@@ -87,13 +87,13 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
 
         @Query("SELECT SUM(COALESCE(ps.productStock.pprice, 0.0)) AS totalSoldValue " +
                         "FROM ProductSale ps " +
-                        "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :cName")
+                        "WHERE ps.saleType='vendor' AND ps.saleType='returned' AND ps.username = :username AND ps.customer.cName = :cName")
         Double findTotalSoldValueByUsernameAndSupplier(@Param("username") String username, @Param("cName") String supplier);
 
         @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, ps.saleNote) "
                         +
                         "FROM ProductSale ps " +
-                        "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date <= :date "
+                        "WHERE ps.saleType='vendor' AND ps.saleType='returned' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date <= :date "
                         +
                         "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
         List<SupplierDetailsDto> findProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate date);
@@ -101,7 +101,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
          @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto(ps.date, ps.customer.cid, 0L, 0.0, SUM(ps.productStock.pprice), 0.0, 0.0, ps.saleNote) "
                         +
                         "FROM ProductSale ps " +
-                        "WHERE ps.saleType='vendor' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date BETWEEN :startDate AND :endDate "
+                        "WHERE ps.saleType='vendor' AND ps.saleType='returned' AND ps.username = :username AND ps.customer.cName = :supplierName AND ps.date BETWEEN :startDate AND :endDate "
                         +
                         "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
         List<SupplierDetailsDto> findDatewiseProductSalesByUsernameAndSupplierName(String username, String supplierName, LocalDate startDate, LocalDate endDate);
