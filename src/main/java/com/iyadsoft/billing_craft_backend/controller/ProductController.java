@@ -269,6 +269,11 @@ public class ProductController {
         return productSaleRepository.getDatewiseProfitSaleByUsername(username, startDate, endDate);
     }
 
+    @GetMapping("/getDatewiseOnlyProfitSale")
+    public List<ProfitItemDto> getDatewiseOnlyProfitSaleByUsername(@RequestParam String username, LocalDate startDate, LocalDate endDate) {
+        return productSaleRepository.getDatewiseOnlyProfitSaleByUsername(username, startDate, endDate);
+    }
+
     @GetMapping("/getMonthlyProductSale")
     public List<CustomerProductSaleDTO> getMonthlyProductsSaleByUsername(@RequestParam String username) {
         return productSaleRepository.getProductsSaleByUsernameForCurrentMonth(username);
@@ -352,8 +357,7 @@ public class ProductController {
     }
 
     @GetMapping("/products/not-in-sales")
-    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username,
-            @RequestParam String productno) {
+    public List<ProductStock> getProductsNotInSalesStock(@RequestParam String username, @RequestParam String productno) {
         return productStockService.getProductsNotInSalesStock(username, productno);
     }
 

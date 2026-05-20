@@ -7,19 +7,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.iyadsoft.billing_craft_backend.dto.LossProfitAnalysis;
+import com.iyadsoft.billing_craft_backend.dto.SaleEditDto;
 import com.iyadsoft.billing_craft_backend.dto.SaleSummaryDto;
 import com.iyadsoft.billing_craft_backend.dto.SalesRequest;
 import com.iyadsoft.billing_craft_backend.entity.ProductSale;
@@ -65,7 +69,7 @@ public class ProductSaleController {
 
     @PostMapping("/purchaseReturn")
     public ProductSale purchaseReturn(@RequestParam Long proId, @RequestParam String username) {
-                     
+
         ProductStock productStock = productStockRepository.findById(proId)
                 .orElseThrow(() -> new RuntimeException("ProductStock not found"));
         ZonedDateTime dhakaTime = ZonedDateTime.now(ZoneId.of("Asia/Dhaka"));
@@ -129,5 +133,35 @@ public class ProductSaleController {
     public ResponseEntity<List<SaleSummaryDto>> getDatewiseSaleSummary(@RequestParam String username, LocalDate date) {
         List<SaleSummaryDto> productCounts = productSaleService.getDatewiseSaleSummary(username, date);
         return ResponseEntity.ok(productCounts);
+    }
+
+    @GetMapping("/sale/saleinfo")
+    public ResponseEntity<SaleEditDto> getSaleInfoByProductno(
+            @RequestParam String username,
+            @RequestParam String productno) {
+
+        Optional<SaleEditDto> saleInfo = productSaleService.getSaleInfoByProductno(
+                username,
+                productno);
+
+        return saleInfo
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/update/{proId}")
+    public ResponseEntity<?> updateSaleInfo(
+            @PathVariable Long proId,
+            @RequestBody ProductSale productSale) {
+
+        try {
+            ProductSale updated = productSaleService.updateSaleInfo(proId, productSale);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Sale info updated successfully",
+                    "data", updated));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "message", e.getMessage()));
+        }
     }
 }

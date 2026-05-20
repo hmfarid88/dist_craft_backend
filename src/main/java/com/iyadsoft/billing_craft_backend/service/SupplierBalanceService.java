@@ -38,13 +38,15 @@ public class SupplierBalanceService {
         for (String supplier : supplierNames) {
             Double totalProductValue = productStockRepository.findTotalProductValueByUsernameAndSupplier(username, supplier);
             Double totalSoldValue = productSaleRepository.findTotalSoldValueByUsernameAndSupplier(username, supplier);
+            Double totalReturnedValue = productSaleRepository.findTotalReturnedValueByUsernameAndSupplier(username, supplier);
             Double totalPayment = supplierPaymentRepository.findTotalPaymentByUsernameAndSupplier(username, supplier);
             Double totalReceive = supplierPaymentRepository.findTotalReceiveByUsernameAndSupplier(username, supplier);
             totalProductValue = (totalProductValue != null) ? totalProductValue : 0.0;
             totalSoldValue = (totalSoldValue != null) ? totalSoldValue : 0.0;
+            totalReturnedValue = (totalReturnedValue != null) ? totalReturnedValue : 0.0;
             totalPayment = (totalPayment != null) ? totalPayment : 0.0;
             totalReceive = (totalReceive != null) ? totalReceive : 0.0;
-            Double balance = (totalProductValue + totalReceive) - (totalPayment + totalSoldValue);
+            Double balance = (totalProductValue + totalReceive) - (totalPayment + totalSoldValue + totalReturnedValue);
 
             summaries.add(new SupplierSummaryDTO(
                     supplier,
@@ -62,6 +64,7 @@ public class SupplierBalanceService {
         // Fetch data from each repository method
         List<SupplierDetailsDto> productPurchases = productStockRepository.findProductDetailsByUsernameAndSupplierName(username, supplierName, date);
         List<SupplierDetailsDto> productSales = productSaleRepository.findProductSalesByUsernameAndSupplierName(username, supplierName, date);
+        List<SupplierDetailsDto> productReturns = productSaleRepository.findProductReturnedByUsernameAndSupplierName(username, supplierName, date);
         List<SupplierDetailsDto> payments = supplierPaymentRepository.findDetailsPaymentByUsernameAndSupplier(username, supplierName, date);
         List<SupplierDetailsDto> receipts = supplierPaymentRepository.findDetailsReceiveByUsernameAndSupplier(username, supplierName, date);
 
@@ -69,6 +72,7 @@ public class SupplierBalanceService {
         List<SupplierDetailsDto> combinedDetails = new ArrayList<>();
         combinedDetails.addAll(productPurchases);
         combinedDetails.addAll(productSales);
+        combinedDetails.addAll(productReturns);
         combinedDetails.addAll(payments);
         combinedDetails.addAll(receipts);
 
@@ -83,6 +87,7 @@ public class SupplierBalanceService {
         // Fetch data from each repository method
         List<SupplierDetailsDto> productPurchases = productStockRepository.findDatewiseProductDetailsByUsernameAndSupplierName(username, supplierName, startDate, endDate);
         List<SupplierDetailsDto> productSales = productSaleRepository.findDatewiseProductSalesByUsernameAndSupplierName(username, supplierName, startDate, endDate);
+        List<SupplierDetailsDto> productReturns = productSaleRepository.findDatewiseProductReturnedByUsernameAndSupplierName(username, supplierName, startDate, endDate);
         List<SupplierDetailsDto> payments = supplierPaymentRepository.findDatewiseDetailsPaymentByUsernameAndSupplier(username, supplierName, startDate, endDate);
         List<SupplierDetailsDto> receipts = supplierPaymentRepository.findDatewiseDetailsReceiveByUsernameAndSupplier(username, supplierName, startDate, endDate);
 
@@ -90,6 +95,7 @@ public class SupplierBalanceService {
         List<SupplierDetailsDto> combinedDetails = new ArrayList<>();
         combinedDetails.addAll(productPurchases);
         combinedDetails.addAll(productSales);
+        combinedDetails.addAll(productReturns);
         combinedDetails.addAll(payments);
         combinedDetails.addAll(receipts);
 

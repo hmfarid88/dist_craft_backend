@@ -44,8 +44,8 @@ public class ProductSale {
     @JoinColumn(name = "cid")
     private Customer customer;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pro_id", unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pro_id")
     private ProductStock productStock;
        
 }
