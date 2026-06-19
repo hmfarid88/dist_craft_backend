@@ -68,7 +68,7 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
                      +
                      "FROM ProductSale s " +
                      "WHERE s.username = :username AND s.saleType = 'customer' " +
-                     "AND s.sprice > s.productStock.pprice AND s.date BETWEEN :startDate AND :endDate GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.pprice, s.sprice")
+                     "AND s.sprice > s.productStock.pprice AND s.date BETWEEN :startDate AND :endDate GROUP BY s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.pprice, s.sprice, s.discount")
        List<ProfitItemDto> getDatewiseOnlyProfitSaleByUsername(String username, LocalDate startDate, LocalDate endDate);
 
        @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.CustomerProductSaleDTO(s.customer.cName, s.customer.phoneNumber, s.customer.address, s.customer.soldby, s.saleNote, s.productStock.category, s.productStock.brand, s.productStock.productName, s.productStock.productno, s.productStock.color, s.productStock.pprice, s.productStock.sprice, s.discount, s.offer, s.date, s.time, s.customer.cid, s.productStock.proId, s.username) "
