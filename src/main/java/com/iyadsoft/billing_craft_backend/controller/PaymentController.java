@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -284,6 +285,16 @@ if ("bank".equalsIgnoreCase(retailerPayment.getPaymentType())) {
         return retailerPaymentService.getRetailerPayForCurrentMonth(username);
     }
 
+    @GetMapping("/getSupplierPayment")
+    public List<SupplierPayment> getSupplierPayForCurrentMonth(@RequestParam String username) {
+        return supplierBalanceService.getSupplierPayForCurrentMonth(username);
+    }
+
+     @GetMapping("/getDatewiseSupplierPayment")
+    public List<SupplierPayment> getDatewiseSupplierPay(@RequestParam String username, LocalDate startDate, LocalDate endDate) {
+        return supplierBalanceService.getDatewiseSupplierPay(username, startDate, endDate);
+    }
+
     @GetMapping("/getRetailerBalance")
     public List<RetailerBalanceDto> getRetailerBalance(@RequestParam String username) {
         LocalDate date = LocalDate.now();
@@ -295,10 +306,33 @@ if ("bank".equalsIgnoreCase(retailerPayment.getPaymentType())) {
         return retailerBalanceService.getRetailerBalance(username, date);
     }
 
+    // @GetMapping("/getDeatailsRetailerBalance")
+    // public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username, @RequestParam String retailerName) {
+    //     return retailerBalanceService.getRetailerDetails(username, retailerName);
+    // }
+
     @GetMapping("/getDeatailsRetailerBalance")
-    public List<RetailerDetailsDto> getRetailerBalance(@RequestParam String username, @RequestParam String retailerName) {
-        return retailerBalanceService.getRetailerDetails(username, retailerName);
+    public List<RetailerDetailsDto> getRetailerBalance(
+        @RequestParam String username,
+        @RequestParam String retailerName,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+    // If no date is provided, use current month
+    if (startDate == null) {
+        startDate = LocalDate.now().withDayOfMonth(1);
     }
+
+    if (endDate == null) {
+        endDate = LocalDate.now();
+    }
+
+    return retailerBalanceService.getRetailerDetails(
+            username,
+            retailerName,
+            startDate,
+            endDate);
+}
 
     @GetMapping("/getDatewiseRetailerPayment")
     public List<RetailerPayment> getDatewiseRetailerPayForCurrentMonth(@RequestParam String username,

@@ -23,7 +23,7 @@ public class RetailerPaymentService {
         int month = now.getMonthValue();
         return retailerPaymentRepository.findRetailerPayByMonth(year, month, username);
     }
-
+    
     public List<RetailerPayment> getRetailerPayForCurrentDay(String username) {
         return retailerPaymentRepository.findTodaysRetailerPaymentByUsername(username);
     }

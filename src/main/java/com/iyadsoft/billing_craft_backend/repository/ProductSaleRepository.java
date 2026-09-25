@@ -144,13 +144,47 @@ public interface ProductSaleRepository extends JpaRepository<ProductSale, Long> 
        List<SupplierDetailsDto> findDatewiseProductReturnedByUsernameAndSupplierName(String username,
                      String supplierName, LocalDate startDate, LocalDate endDate);
 
-       @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(ps.date, ps.customer.cid, ps.saleNote, SUM(ps.sprice-ps.discount), sum(ps.customer.vatAmount), 0.0) "
-                     +
-                     "FROM ProductSale ps " +
-                     "WHERE ps.saleType='customer' AND ps.username = :username AND ps.customer.cName = :retailerName "
-                     +
-                     "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
-       List<RetailerDetailsDto> findProductSalesByUsernameAndReatilerName(String username, String retailerName);
+    //    @Query("SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(ps.date, ps.customer.cid, ps.saleNote, SUM(ps.sprice-ps.discount), sum(ps.customer.vatAmount), 0.0) "
+    //                  +
+    //                  "FROM ProductSale ps " +
+    //                  "WHERE ps.saleType='customer' AND ps.username = :username AND ps.customer.cName = :retailerName "
+    //                  +
+    //                  "GROUP BY ps.date, ps.customer.cid, ps.saleNote")
+    //    List<RetailerDetailsDto> findProductSalesByUsernameAndReatilerName(String username, String retailerName);
+@Query("""
+    SELECT COALESCE(SUM(ps.sprice - ps.discount), 0)
+    FROM ProductSale ps
+    WHERE ps.saleType = 'customer'
+      AND ps.username = :username
+      AND ps.customer.cName = :retailerName
+      AND ps.date < :startDate
+""")
+Double getOpeningSalesAmount(
+        @Param("username") String username,
+        @Param("retailerName") String retailerName,
+        @Param("startDate") LocalDate startDate);
+    @Query("""
+    SELECT new com.iyadsoft.billing_craft_backend.dto.RetailerDetailsDto(
+        ps.date,
+        ps.customer.cid,
+        ps.saleNote,
+        SUM(ps.sprice - ps.discount),
+        COALESCE(SUM(ps.customer.vatAmount), 0),
+        0.0
+    )
+    FROM ProductSale ps
+    WHERE ps.saleType = 'customer'
+      AND ps.username = :username
+      AND ps.customer.cName = :retailerName
+      AND ps.date BETWEEN :startDate AND :endDate
+    GROUP BY ps.date, ps.customer.cid, ps.saleNote
+    ORDER BY ps.date
+""")
+List<RetailerDetailsDto> findProductSalesByUsernameAndRetailerName(
+        @Param("username") String username,
+        @Param("retailerName") String retailerName,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
 
        @Query("SELECT ps.customer.cid FROM ProductSale ps WHERE ps.username = :username AND ps.productStock.productno = :productno")
        String findCidByUsernameAndProductno(@Param("username") String username, @Param("productno") String productno);

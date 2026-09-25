@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -80,24 +79,85 @@ public class RetailerBalanceService {
         return new ArrayList<>(resultMap.values());
     }
 
-    public List<RetailerDetailsDto> getRetailerDetails(String username, String retailerName) {
-        // Fetch data from each repository method
-        List<RetailerDetailsDto> productSales = productSaleRepository
-                .findProductSalesByUsernameAndReatilerName(username, retailerName);
-        List<RetailerDetailsDto> payments = retailerPaymentRepository
-                .findDetailsPaymentByUsernameAndRetailerName(username, retailerName);
+    // public List<RetailerDetailsDto> getRetailerDetails(String username, String retailerName) {
+    //     // Fetch data from each repository method
+    //     List<RetailerDetailsDto> productSales = productSaleRepository
+    //             .findProductSalesByUsernameAndReatilerName(username, retailerName);
+    //     List<RetailerDetailsDto> payments = retailerPaymentRepository
+    //             .findDetailsPaymentByUsernameAndRetailerName(username, retailerName);
 
-        // Combine the results
-        List<RetailerDetailsDto> combinedDetails = new ArrayList<>();
-        combinedDetails.addAll(productSales);
-        combinedDetails.addAll(payments);
+    //     // Combine the results
+    //     List<RetailerDetailsDto> combinedDetails = new ArrayList<>();
+    //     combinedDetails.addAll(productSales);
+    //     combinedDetails.addAll(payments);
 
-        // Sort the combined list by date (assuming date is a field in
-        // SupplierDetailsDto)
-        combinedDetails.sort(Comparator.comparing(RetailerDetailsDto::getDate));
+    //     combinedDetails.sort(Comparator.comparing(RetailerDetailsDto::getDate));
 
-        return combinedDetails;
+    //     return combinedDetails;
+    // }
+
+    public List<RetailerDetailsDto> getRetailerDetails(String username, String retailerName, LocalDate startDate, LocalDate endDate) {
+
+    // Opening balance
+    Double openingSales = productSaleRepository
+            .getOpeningSalesAmount(username, retailerName, startDate);
+
+    Double openingPayments = retailerPaymentRepository
+            .getOpeningPaymentAmount(username, retailerName, startDate);
+
+    double openingBalance = openingSales - openingPayments;
+
+    // Current month transactions
+    List<RetailerDetailsDto> productSales =
+            productSaleRepository.findProductSalesByUsernameAndRetailerName(
+                    username, retailerName, startDate, endDate);
+
+    List<RetailerDetailsDto> payments =
+            retailerPaymentRepository.findDetailsPaymentByUsernameAndRetailerName(
+                    username, retailerName, startDate, endDate);
+
+    // Combine
+    List<RetailerDetailsDto> combinedDetails = new ArrayList<>();
+    combinedDetails.addAll(productSales);
+    combinedDetails.addAll(payments);
+
+    // Sort by date
+    combinedDetails.sort(Comparator.comparing(RetailerDetailsDto::getDate));
+
+    // Running balance
+    double runningBalance = openingBalance;
+
+    // Add opening row
+    RetailerDetailsDto openingRow = new RetailerDetailsDto(
+            startDate.minusDays(1),
+            "Opening",
+            "Opening Balance",
+            0.0,
+            0.0,
+            0.0
+    );
+    openingRow.setBalance(runningBalance);
+
+    List<RetailerDetailsDto> result = new ArrayList<>();
+    result.add(openingRow);
+
+    // Process transactions
+    for (RetailerDetailsDto dto : combinedDetails) {
+
+        double sale = (dto.getProductAmount() == null ? 0 : dto.getProductAmount())
+                + (dto.getVatAmount() == null ? 0 : dto.getVatAmount());
+
+        double payment = dto.getPayment() == null ? 0 : dto.getPayment();
+
+        runningBalance += sale - payment;
+
+        dto.setBalance(runningBalance);
+
+        result.add(dto);
     }
+
+    return result;
+}
 
     public Double getBalance(String username) {
         Double totalProductValue = productSaleRepository.getTotalProductValue(username).orElse(0.0);

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto;
 import com.iyadsoft.billing_craft_backend.dto.SupplierSummaryDTO;
+import com.iyadsoft.billing_craft_backend.entity.RetailerPayment;
+import com.iyadsoft.billing_craft_backend.entity.SupplierPayment;
 import com.iyadsoft.billing_craft_backend.repository.ProductSaleRepository;
 import com.iyadsoft.billing_craft_backend.repository.ProductStockRepository;
 import com.iyadsoft.billing_craft_backend.repository.SupplierPaymentRepository;
@@ -104,5 +106,16 @@ public class SupplierBalanceService {
         combinedDetails.sort(Comparator.comparing(SupplierDetailsDto::getDate));
 
         return combinedDetails;
+    }
+
+    public List<SupplierPayment> getSupplierPayForCurrentMonth(String username) {
+        LocalDate now = LocalDate.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        return supplierPaymentRepository.findSupplierPayByMonth(year, month, username);
+    }
+
+    public List<SupplierPayment> getDatewiseSupplierPay(String username, LocalDate startDate, LocalDate endDate) {
+        return supplierPaymentRepository.findDatewiseSupplierPaymentByUsername(username, startDate, endDate);
     }
 }

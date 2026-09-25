@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import com.iyadsoft.billing_craft_backend.dto.PaymentDto;
 import com.iyadsoft.billing_craft_backend.dto.ReceiveDto;
 import com.iyadsoft.billing_craft_backend.dto.SupplierDetailsDto;
+import com.iyadsoft.billing_craft_backend.entity.RetailerPayment;
 import com.iyadsoft.billing_craft_backend.entity.SupplierPayment;
 
 public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment, Long> {
@@ -72,4 +73,9 @@ public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment
 
       Optional<SupplierPayment> findByIdAndUsername(Long id, String username);
 
+      @Query("SELECT o FROM SupplierPayment o WHERE YEAR(o.date) = :year AND MONTH(o.date) = :month AND o.username = :username ORDER BY o.date")
+       List<SupplierPayment> findSupplierPayByMonth(@Param("year") int year, @Param("month") int month, @Param("username") String username);
+        
+       @Query("SELECT ps FROM SupplierPayment ps WHERE  ps.username=:username AND ps.date BETWEEN :startDate AND :endDate ORDER BY ps.date")
+       List<SupplierPayment> findDatewiseSupplierPaymentByUsername(String username, LocalDate startDate, LocalDate endDate);
 }
