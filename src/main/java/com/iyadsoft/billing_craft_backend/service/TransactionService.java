@@ -30,22 +30,22 @@ public class TransactionService {
     private RetailerPaymentRepository retailerPaymentRepository;
 
     public List<Expense> getLast30DaysExpenses(String username) {
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(29);
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(365);
         return expenseRepository.findByUsernameAndDateGreaterThanEqualOrderByDateDesc(username, thirtyDaysAgo);
     }
 
     public List<PaymentRecord> getLast30DaysOfficePayment(String username) {
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(29);
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(365);
         return paymentRecordRepository.findByUsernameAndDateGreaterThanEqualOrderByDateDesc(username, thirtyDaysAgo);
     }
 
     public List<SupplierPayment> getLast30DaysSupplierPayment(String username) {
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(29);
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(365);
         return supplierPaymentRepository.findByUsernameAndDateGreaterThanEqualOrderByDateDesc(username, thirtyDaysAgo);
     }
 
     public List<RetailerPayment> getLast30DaysRetailerPayment(String username) {
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(29);
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(365);
         return retailerPaymentRepository.findByUsernameAndDateGreaterThanEqualOrderByDateDesc(username, thirtyDaysAgo);
     }
 }
